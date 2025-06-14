@@ -1,18 +1,13 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { AppService } from './app.service';
-import { CreateUserDTO } from './dtos/create-user.dto';
+import { Controller, Get } from '@nestjs/common';
+// import { AppService } from './app.service';
+import { PrismaService } from './prisma/prisma.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   @Get()
-  getHello() {
-    return this.appService.getUsers();
-  }
-
-  @Post()
-  addUser(@Body() dto: CreateUserDTO) {
-    return this.appService.addUser(dto);
+  getUsers() {
+    return this.prisma.user.findMany();
   }
 }
