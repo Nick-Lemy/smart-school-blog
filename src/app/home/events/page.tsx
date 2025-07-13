@@ -9,40 +9,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   Calendar,
   MapPin,
   Users,
   Clock,
   Search,
-  Filter,
   Plus,
-  Share2,
-  BookmarkPlus,
   Ticket,
-  School,
-  Music,
-  Trophy,
-  Briefcase,
 } from "lucide-react";
 import Image from "next/image";
 
 export default function EventsPage() {
-  const [selectedCategory, setSelectedCategory] = useState("career");
+  const [selectedCategory] = useState("career");
   const [searchQuery, setSearchQuery] = useState("");
-
-  const eventCategories = [
-    { id: "all", label: "All Events", icon: Calendar, count: 24 },
-    { id: "academic", label: "Academic", icon: School, count: 8 },
-    { id: "social", label: "Social", icon: Users, count: 6 },
-    { id: "cultural", label: "Cultural", icon: Music, count: 5 },
-    { id: "sports", label: "Sports", icon: Trophy, count: 3 },
-    { id: "career", label: "Career", icon: Briefcase, count: 2 },
-  ];
 
   const featuredEvents = [
     {
@@ -207,7 +190,7 @@ export default function EventsPage() {
                               <Image
                                 width={50}
                                 height={50}
-                                src={event.image || "/placeholder.svg"}
+                                src={"/placeholder.svg"}
                                 alt={event.title + " Image"}
                                 className="w-full h-48 md:h-full object-cover"
                               />
