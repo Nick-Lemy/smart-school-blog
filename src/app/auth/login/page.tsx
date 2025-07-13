@@ -7,63 +7,67 @@ import Link from "next/link";
 import GoogleIcon from "@/components/icons/GoogleIcon";
 import { useRouter } from "next/navigation";
 
-export default function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"form">) {
+export default function LoginPage() {
   const router = useRouter();
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Login to your account</h1>
-        <p className="text-muted-foreground text-sm text-balance">
-          Enter your email below to login to your account
-        </p>
-      </div>
-      <div className="grid gap-6">
-        <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+    <div>
+      <form className={cn("flex flex-col gap-6")}>
+        <div className="flex flex-col items-center gap-2 text-center">
+          <h1 className="text-2xl font-bold">Login to your account</h1>
+          <p className="text-muted-foreground text-sm text-balance">
+            Enter your email below to login to your account
+          </p>
         </div>
-        <div className="grid gap-3">
-          <div className="flex items-center">
-            <Label htmlFor="password">Password</Label>
-            <a
-              href="#"
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
-              Forgot your password?
-            </a>
+        <div className="grid gap-6">
+          <div className="grid gap-3">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              required
+            />
           </div>
-          <Input id="password" type="password" required />
+          <div className="grid gap-3">
+            <div className="flex items-center">
+              <Label htmlFor="password">Password</Label>
+              <a
+                href="#"
+                className="ml-auto text-sm underline-offset-4 hover:underline"
+              >
+                Forgot your password?
+              </a>
+            </div>
+            <Input id="password" type="password" required />
+          </div>
+          <Button
+            onClick={() => router.push("/home/dashboard")}
+            type="submit"
+            className="w-full"
+          >
+            Login
+          </Button>
+          <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+            <span className="bg-background text-muted-foreground relative z-10 px-2">
+              Or continue with
+            </span>
+          </div>
+          <Button
+            onClick={() => router.push("/home/dashboard")}
+            variant="outline"
+            className="w-full"
+          >
+            <GoogleIcon />
+            Login with Google
+          </Button>
         </div>
-        <Button
-          onClick={() => router.push("/home/dashboard")}
-          type="submit"
-          className="w-full"
-        >
-          Login
-        </Button>
-        <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-          <span className="bg-background text-muted-foreground relative z-10 px-2">
-            Or continue with
-          </span>
+        <div className="text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <Link href="/auth/register" className="underline underline-offset-4">
+            Register
+          </Link>
         </div>
-        <Button
-          onClick={() => router.push("/home/dashboard")}
-          variant="outline"
-          className="w-full"
-        >
-          <GoogleIcon />
-          Login with Google
-        </Button>
-      </div>
-      <div className="text-center text-sm">
-        Don&apos;t have an account?{" "}
-        <Link href="/auth/register" className="underline underline-offset-4">
-          Register
-        </Link>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }
