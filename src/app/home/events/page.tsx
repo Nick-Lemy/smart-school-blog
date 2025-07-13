@@ -29,6 +29,7 @@ import {
   Trophy,
   Briefcase,
 } from "lucide-react";
+import Image from "next/image";
 
 export default function EventsPage() {
   const [selectedCategory, setSelectedCategory] = useState("career");
@@ -203,7 +204,9 @@ export default function EventsPage() {
                         <div className="flex items-start justify-between">
                           <div className="space-y-2">
                             <div className="md:w-1/2">
-                              <img
+                              <Image
+                                width={50}
+                                height={50}
                                 src={event.image || "/placeholder.svg"}
                                 alt={event.title + " Image"}
                                 className="w-full h-48 md:h-full object-cover"
