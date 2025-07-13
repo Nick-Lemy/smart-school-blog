@@ -7,7 +7,7 @@ export default function NotFound() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/home/dashboard");
+    router.replace("/auth/login");
   }, [router]);
 
   return null;
