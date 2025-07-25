@@ -1,73 +1,110 @@
 "use client";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import GoogleIcon from "@/components/icons/GoogleIcon";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    router.push("/home/dashboard");
+  };
+
   return (
-    <div>
-      <form className={cn("flex flex-col gap-6")}>
-        <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Login to your account</h1>
-          <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
+    <div className="min-h-screen flex items-center justify-center bg-white px-4 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-8">
+        <div className="flex flex-col items-center gap-6">
+          {/* Simple Logo Placeholder */}
+          <div className="flex flex-col items-center">
+            <div className="bg-blue-600 rounded-full w-16 h-16 flex items-center justify-center mb-4">
+              <span className="text-white font-bold text-xl">SB</span>
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              SmartSchool Blog
+            </h1>
+          </div>
+
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Sign in to your account
+            </h2>
+            <p className="text-gray-600 mt-2">
+              Access AI summaries and school events
+            </p>
+          </div>
+        </div>
+
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email Address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                placeholder="name@school.edu"
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Password
+                </label>
+                <div className="text-sm">
+                  <Link
+                    href="/auth/forgot-password"
+                    className="font-medium text-blue-600 hover:text-blue-500"
+                  >
+                    Forgot?
+                  </Link>
+                </div>
+              </div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete="current-password"
+                required
+                placeholder="Enter your password"
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Sign In
+            </button>
+          </div>
+        </form>
+
+        <div className="text-center text-sm">
+          <p className="text-gray-600">
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/auth/register"
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              Register now
+            </Link>
           </p>
         </div>
-        <div className="grid gap-6">
-          <div className="grid gap-3">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              required
-            />
-          </div>
-          <div className="grid gap-3">
-            <div className="flex items-center">
-              <Label htmlFor="password">Password</Label>
-              <a
-                href="#"
-                className="ml-auto text-sm underline-offset-4 hover:underline"
-              >
-                Forgot your password?
-              </a>
-            </div>
-            <Input id="password" type="password" required />
-          </div>
-          <Button
-            onClick={() => router.push("/home/dashboard")}
-            type="submit"
-            className="w-full"
-          >
-            Login
-          </Button>
-          <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-            <span className="bg-background text-muted-foreground relative z-10 px-2">
-              Or continue with
-            </span>
-          </div>
-          <Button
-            onClick={() => router.push("/home/dashboard")}
-            variant="outline"
-            className="w-full"
-          >
-            <GoogleIcon />
-            Login with Google
-          </Button>
-        </div>
-        <div className="text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <Link href="/auth/register" className="underline underline-offset-4">
-            Register
-          </Link>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }
