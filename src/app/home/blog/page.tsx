@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Sparkles, Search, MessageCircle, ThumbsUpIcon } from "lucide-react";
+import { Sparkles, Search } from "lucide-react";
 
 export default function BlogPage() {
   // Sample data
@@ -51,52 +51,27 @@ export default function BlogPage() {
             <div className="flex items-center space-x-4">
               <h1 className="text-xl font-bold text-green-600">Posts</h1>
             </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search posts..."
-                  className="pl-10 w-64 bg-gray-100 border-0"
-                />
-              </div>
-            </div>
+            <Button className="bg-green-600 text-black font-semibold">
+              Create Post
+            </Button>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto flex flex-col items-center px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Input
+              placeholder="Search posts..."
+              className="pl-10 w-72 bg-gray-100 border-0"
+            />
+          </div>
+        </div>
         <div className="space-y-6">
           {feedPosts.map((post) => (
             <Card key={post.id} className=" border-0 shadow-0">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <p className="font-thin text-xs text-white">
-                    <span className="text-green-700 font-bold">Author: </span>
-                    {post.author}
-                  </p>
-                  {/* <div className="flex items-center space-x-3">
-                    <Avatar>
-                      <AvatarImage src={post.avatar || "/placeholder.svg"} />
-                      <AvatarFallback>
-                        {post.author
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium text-gray-900">{post.author}</p>
-                      <p className="text-sm text-gray-500">{post.timeAgo}</p>
-                    </div>
-                  </div> */}
-                  {/* <Badge
-                    variant="outline"
-                    className="border-gray-300 text-gray-700"
-                  >
-                    {post.category}
-                  </Badge> */}
-                </div>
                 <CardTitle className="text-xl cursor-pointer text-green-600 transition-colors">
                   {post.title}
                 </CardTitle>
@@ -120,8 +95,8 @@ export default function BlogPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-6">
+                <div className="flex items-center justify-between w-full">
+                  {/* <div className="flex items-center space-x-6">
                     <button className="flex items-center space-x-2 text-white hover:text-red-500 transition-colors">
                       <ThumbsUpIcon className="w-4 h-4" />
                       <span className="text-sm">{post.likes}</span>
@@ -131,7 +106,12 @@ export default function BlogPage() {
                       <span className="text-sm">{post.comments}</span>
                     </button>
                   </div>
-                  <Button className="">Read More</Button>
+                  <Button className="">Read More</Button> */}
+                  <p className="font-normal text-xs text-white">
+                    <span className="text-green-600 font-bold">Author: </span>
+                    {post.author}
+                  </p>
+                  <p className="text-sm text-gray-500">{post.timeAgo}</p>
                 </div>
               </CardContent>
             </Card>

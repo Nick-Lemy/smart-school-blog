@@ -16,7 +16,7 @@ import { Calendar, MapPin, Users, Clock, Search, Ticket } from "lucide-react";
 import Image from "next/image";
 
 export default function EventsPage() {
-  const [selectedCategory] = useState("career");
+  // const [selectedCategory] = useState("career");
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -129,47 +129,44 @@ export default function EventsPage() {
 
   const allEvents = [...featuredEvents, ...upcomingEvents];
 
-  const filteredEvents = allEvents.filter((event) => {
-    const matchesCategory =
-      selectedCategory === "all" || event.category === selectedCategory;
-    const matchesSearch =
-      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filteredEvents = allEvents;
 
   return (
     <div className="min-h-screen ">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-gray-800 white sticky -top-0.25 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-5">
             <div className="flex items-center space-x-4">
               <h1 className="text-xl font-bold text-green-600">Events</h1>
             </div>
-
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <Input
-                  placeholder="Search events..."
-                  className="pl-10 w-64 bg-gray-100 border-0"
-                />
-              </div>
-            </div>
+            <Button className="bg-green-600 text-black font-semibold">
+              Create Event
+            </Button>
           </div>
         </div>
       </header>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid lg:grid-cols-1 gap-8">
+          <div className="flex items-center px-2 space-x-4">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search posts..."
+                className="pl-10 w-full bg-gray-100 border-0"
+              />
+            </div>
+          </div>
           {/* Main Content */}
           <div className="lg:col-span-3">
             <Tabs defaultValue="featured" className="w-full">
               <TabsContent value="featured" className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   {filteredEvents.map((event) => (
-                    <Card key={event.id} className="">
+                    <Card
+                      key={event.id}
+                      className="bg-gray-800 border border-gray-600 shadow-sm"
+                    >
                       <CardHeader>
                         <div className="flex items-start justify-between">
                           <div className="space-y-2">
@@ -179,35 +176,35 @@ export default function EventsPage() {
                                 height={50}
                                 src={"/placeholder.svg"}
                                 alt={event.title + " Image"}
-                                className="w-full h-48 md:h-full object-cover"
+                                className="w-full h-48 md:h-full object-cover rounded-md"
                               />
                             </div>
-                            <CardTitle className="text-lg  cursor-pointer">
+                            <CardTitle className="text-lg cursor-pointer text-green-500 hover:text-green-400 transition-colors">
                               {event.title}
                             </CardTitle>
                           </div>
                         </div>
-                        <CardDescription className="line-clamp-2">
+                        <CardDescription className="line-clamp-2 text-white">
                           {event.description}
                         </CardDescription>
                       </CardHeader>
 
                       <CardContent className="space-y-4">
-                        <div className="space-y-2 text-sm text-gray-600">
+                        <div className="space-y-2 text-sm text-gray-200">
                           <div className="flex items-center space-x-2">
-                            <Calendar className="w-4 h-4" />
+                            <Calendar className="w-4 h-4 text-green-400" />
                             <span>{event.date}</span>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <Clock className="w-4 h-4" />
+                            <Clock className="w-4 h-4 text-green-400" />
                             <span>{event.time}</span>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <MapPin className="w-4 h-4" />
+                            <MapPin className="w-4 h-4 text-green-400" />
                             <span>{event.location}</span>
                           </div>
                           <div className="flex items-center space-x-2">
-                            <Users className="w-4 h-4" />
+                            <Users className="w-4 h-4 text-green-400" />
                             <span>{event.attendees} attendees</span>
                           </div>
                         </div>
@@ -220,20 +217,20 @@ export default function EventsPage() {
                                   event.organizerAvatar || "/placeholder.svg"
                                 }
                               />
-                              <AvatarFallback className="text-xs">
+                              <AvatarFallback className="text-xs bg-gray-700 text-white">
                                 {event.organizer
                                   .split(" ")
                                   .map((n) => n[0])
                                   .join("")}
                               </AvatarFallback>
                             </Avatar>
-                            <span className="text-sm text-gray-600">
+                            <span className="text-sm text-gray-400">
                               {event.organizer}
                             </span>
                           </div>
                         </div>
 
-                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+                        <Button className="w-full bg-green-600 hover:bg-green-700 text-black font-semibold">
                           <Ticket className="w-4 h-4 mr-2" />
                           Register Now
                         </Button>

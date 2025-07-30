@@ -11,35 +11,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div className="flex flex-col items-center gap-6">
+    <div className="min-h-dvh flex items-center justify-center bg-gray-700 px-6 py-12 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md space-y-4">
+        <div className="flex flex-col items-center gap-2">
           {/* Simple Logo Placeholder */}
           <div className="flex flex-col items-center">
-            <div className="bg-green-600 rounded-full w-16 h-16 flex items-center justify-center mb-4">
-              <span className="text-white font-bold text-xl">SB</span>
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              SmartSchool Blog
+            <h1 className="text-3xl font-bold text-green-600">
+              Smart School Blog
             </h1>
           </div>
 
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-white">
               Sign in to your account
             </h2>
-            <p className="text-gray-600 mt-2">
+            <p className="text-gray-50 text-sm mt-2">
               Access AI summaries and school events
             </p>
           </div>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div className="space-y-2">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-white"
               >
                 Email Address
               </label>
@@ -58,7 +55,7 @@ export default function LoginPage() {
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-white"
                 >
                   Password
                 </label>
@@ -86,7 +83,7 @@ export default function LoginPage() {
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-semibold text-black bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Sign In
             </button>
@@ -94,7 +91,7 @@ export default function LoginPage() {
         </form>
 
         <div className="text-center text-sm">
-          <p className="text-gray-600">
+          <p className="text-white">
             Don&apos;t have an account?{" "}
             <Link
               href="/auth/register"

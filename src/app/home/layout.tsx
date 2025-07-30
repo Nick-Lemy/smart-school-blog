@@ -26,7 +26,7 @@ function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/50 backdrop-blur-md shadow-lg  rounded-2xl px-6 py-2 flex justify-between w-[90%] max-w-md z-50">
+    <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-800/50 backdrop-blur-md shadow-lg  rounded-lg px-6 py-4 flex justify-between w-[90%] max-w-md z-50">
       {navItems.map(({ href, label, icon: Icon }) => {
         const isActive = pathname === href;
         return (
@@ -38,13 +38,13 @@ function BottomNav() {
             <Icon
               className={`h-5 w-5 mb-1 transition-all ${
                 isActive
-                  ? "text-green-700 font-semibold scale-[1.25]"
-                  : "text-green-600"
+                  ? "text-white -700 font-semibold scale-[1.25]"
+                  : "text-white -600"
               }`}
             />
             <span
               className={`transition-all ${
-                isActive ? "text-green-700 font-semibold" : "text-green-600"
+                isActive ? "text-white -700 font-semibold" : "text-white -600"
               }`}
             >
               {label}
