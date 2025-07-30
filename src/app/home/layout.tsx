@@ -37,7 +37,9 @@ function BottomNav() {
           >
             <Icon
               className={`h-5 w-5 mb-1 transition-all ${
-                isActive ? "text-green-700 font-semibold" : "text-green-600"
+                isActive
+                  ? "text-green-700 font-semibold"
+                  : "text-green-600 scale-[1.5]"
               }`}
             />
             <span
