@@ -10,7 +10,7 @@ export default function HomeLayout({
 }) {
   return (
     <>
-      <div>{children}</div>
+      <div className="pb-12">{children}</div>
       <BottomNav />
     </>
   );
