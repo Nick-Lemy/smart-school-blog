@@ -12,19 +12,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import {
-  Calendar,
-  MapPin,
-  Users,
-  Clock,
-  Search,
-  Plus,
-  Ticket,
-} from "lucide-react";
+import { Calendar, MapPin, Users, Clock, Search, Ticket } from "lucide-react";
 import Image from "next/image";
 
 export default function EventsPage() {
   const [selectedCategory] = useState("career");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [searchQuery, setSearchQuery] = useState("");
 
   const featuredEvents = [

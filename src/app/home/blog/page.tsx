@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,17 +10,9 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import {
-  Sparkles,
-  Search,
-  MessageCircle,
-  Plus,
-  ThumbsUpIcon,
-} from "lucide-react";
+import { Sparkles, Search, MessageCircle, ThumbsUpIcon } from "lucide-react";
 
 export default function BlogPage() {
-  const [searchQuery, setSearchQuery] = useState("");
-
   // Sample data
   const feedPosts = [
     {

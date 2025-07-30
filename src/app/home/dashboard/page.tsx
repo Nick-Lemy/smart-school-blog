@@ -36,15 +36,9 @@ import {
   Plus,
   Edit,
   Trash2,
-  Eye,
   Clock,
   MapPin,
-  Bell,
-  Search,
-  Settings,
   LogOut,
-  BookOpen,
-  TrendingUp,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -137,28 +131,6 @@ export default function DashboardPage() {
       status: "Upcoming",
       category: "Competition",
     },
-  ];
-
-  const stats = [
-    {
-      label: "Total Posts",
-      value: "12",
-      change: "+2 this week",
-      icon: BookOpen,
-    },
-    {
-      label: "Total Views",
-      value: "1.2K",
-      change: "+15% this month",
-      icon: Eye,
-    },
-    {
-      label: "Engagement",
-      value: "89",
-      change: "+5 interactions",
-      icon: TrendingUp,
-    },
-    { label: "Events", value: "5", change: "2 upcoming", icon: Calendar },
   ];
 
   const handleCreatePost = () => {
