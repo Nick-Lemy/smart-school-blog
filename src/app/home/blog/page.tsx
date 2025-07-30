@@ -45,7 +45,7 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen ">
       {/* Header with gradient */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-gray-800 white sticky -top-0.25 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-5">
             <div className="flex items-center space-x-4">
@@ -71,8 +71,9 @@ export default function BlogPage() {
             <Card key={post.id} className=" border-0 shadow-0">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <p className="font-medium text-xs text-gray-500">
-                    <span className="text-black">Author:</span> {post.author}
+                  <p className="font-thin text-xs text-white">
+                    <span className="text-green-700 font-bold">Author: </span>
+                    {post.author}
                   </p>
                   {/* <div className="flex items-center space-x-3">
                     <Avatar>
@@ -96,41 +97,41 @@ export default function BlogPage() {
                     {post.category}
                   </Badge> */}
                 </div>
-                <CardTitle className="text-xl cursor-pointer hover:text-green-600 transition-colors">
+                <CardTitle className="text-xl cursor-pointer text-green-600 transition-colors">
                   {post.title}
                 </CardTitle>
-                <CardDescription className="text-gray-600">
+                <CardDescription className="text-white font-normal">
                   {post.excerpt}
                 </CardDescription>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div className="bg-green-50 border-l-4 border-green-400 p-3 rounded">
-                  <div className="flex items-start space-x-2">
+                <div className="bg-gray-600/50 border-l-4 border-green-400 p-3 rounded">
+                  <div className="flex items-start justif space-x-2">
                     <Sparkles className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="text-xs font-medium text-green-700 mb-1">
+                      <p className="text-xs font-medium text-green-500 mb-1">
                         AI SUMMARY
                       </p>
-                      <p className="text-sm text-green-600">{post.aiSummary}</p>
+                      <p className="text-sm text-gray-300 font-thin">
+                        {post.aiSummary}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-6">
-                    <button className="flex items-center space-x-2 text-gray-500 hover:text-red-500 transition-colors">
+                    <button className="flex items-center space-x-2 text-white hover:text-red-500 transition-colors">
                       <ThumbsUpIcon className="w-4 h-4" />
                       <span className="text-sm">{post.likes}</span>
                     </button>
-                    <button className="flex items-center space-x-2 text-gray-500 hover:text-green-500 transition-colors">
+                    <button className="flex items-center space-x-2 text-white hover:text-green-500 transition-colors">
                       <MessageCircle className="w-4 h-4" />
                       <span className="text-sm">{post.comments}</span>
                     </button>
                   </div>
-                  <Button variant="outline" className="">
-                    Read More
-                  </Button>
+                  <Button className="">Read More</Button>
                 </div>
               </CardContent>
             </Card>
