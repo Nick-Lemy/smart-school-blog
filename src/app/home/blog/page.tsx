@@ -7,8 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Sparkles, Search, MessageCircle, ThumbsUpIcon } from "lucide-react";
 
@@ -45,7 +43,7 @@ export default function BlogPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen ">
       {/* Header with gradient */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -73,7 +71,10 @@ export default function BlogPage() {
             <Card key={post.id} className=" border-0 shadow-0">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
+                  <p className="font-medium text-xs text-gray-500">
+                    <span className="text-black">Author:</span> {post.author}
+                  </p>
+                  {/* <div className="flex items-center space-x-3">
                     <Avatar>
                       <AvatarImage src={post.avatar || "/placeholder.svg"} />
                       <AvatarFallback>
@@ -87,13 +88,13 @@ export default function BlogPage() {
                       <p className="font-medium text-gray-900">{post.author}</p>
                       <p className="text-sm text-gray-500">{post.timeAgo}</p>
                     </div>
-                  </div>
-                  <Badge
+                  </div> */}
+                  {/* <Badge
                     variant="outline"
                     className="border-gray-300 text-gray-700"
                   >
                     {post.category}
-                  </Badge>
+                  </Badge> */}
                 </div>
                 <CardTitle className="text-xl cursor-pointer hover:text-green-600 transition-colors">
                   {post.title}
@@ -127,10 +128,7 @@ export default function BlogPage() {
                       <span className="text-sm">{post.comments}</span>
                     </button>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="border-gray-300 hover:bg-gray-50"
-                  >
+                  <Button variant="outline" className="">
                     Read More
                   </Button>
                 </div>
