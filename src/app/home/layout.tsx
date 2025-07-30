@@ -20,8 +20,8 @@ function BottomNav() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: "/home/dashboard", label: "Dashboard", icon: Home },
     { href: "/home/blog", label: "Blog", icon: BookOpen },
+    { href: "/home/dashboard", label: "Dashboard", icon: Home },
     { href: "/home/events", label: "Events", icon: CalendarDays },
   ];
 
