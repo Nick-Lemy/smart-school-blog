@@ -148,28 +148,25 @@ export default function EventsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-gradient-to-r bg-black text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl md:text-5xl font-bold">Campus Events</h1>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
-              <div className="relative w-full max-w-md">
-                <Search className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70" />
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-5">
+            <div className="flex items-center space-x-4">
+              <h1 className="text-xl font-bold text-green-600">Events</h1>
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
                   placeholder="Search events..."
-                  className="pl-10 bg-white/20 border-white/30 text-white placeholder:text-white/70"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-64 bg-gray-100 border-0"
                 />
               </div>
-              <Button className="bg-white text-black hover:bg-gray-100">
-                <Plus />
-                Create Event
-              </Button>
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid lg:grid-cols-1 gap-8">
@@ -179,10 +176,7 @@ export default function EventsPage() {
               <TabsContent value="featured" className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   {filteredEvents.map((event) => (
-                    <Card
-                      key={event.id}
-                      className="hover:shadow-lg transition-shadow"
-                    >
+                    <Card key={event.id} className="">
                       <CardHeader>
                         <div className="flex items-start justify-between">
                           <div className="space-y-2">
@@ -246,7 +240,7 @@ export default function EventsPage() {
                           </div>
                         </div>
 
-                        <Button className="w-full">
+                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white">
                           <Ticket className="w-4 h-4 mr-2" />
                           Register Now
                         </Button>
@@ -255,29 +249,6 @@ export default function EventsPage() {
                   ))}
                 </div>
               </TabsContent>
-
-              {/* <TabsContent value="my-events" className="space-y-6">
-                <div className="text-center py-12">
-                  <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    No Events Yet
-                  </h3>
-                  <p className="text-gray-600 mb-6">
-                    You haven&apos;t registered for any events or created any
-                    events yet.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button className="bg-gradient-to-r from-orange-500 to-green-500 text-white">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create Event
-                    </Button>
-                    <Button variant="outline">
-                      <Search className="w-4 h-4 mr-2" />
-                      Browse Events
-                    </Button>
-                  </div>
-                </div>
-              </TabsContent> */}
             </Tabs>
           </div>
         </div>
