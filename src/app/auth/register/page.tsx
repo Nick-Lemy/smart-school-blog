@@ -47,8 +47,11 @@ export default function RegisterPage() {
       });
 
       router.push("/auth/login");
-    } catch (err) {
-      setError(err.response?.data?.message || "Registration failed.");
+    } catch (error: unknown) {
+      setError(
+        "Registration failed: " +
+          (error instanceof Error ? error.message : "Unknown error")
+      );
     }
   };
 
