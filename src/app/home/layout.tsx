@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { BookOpen, CalendarDays, Home, Loader2 } from "lucide-react";
+import { BookOpen, CalendarDays, Home, Loader2, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 export default function HomeLayout({
@@ -37,15 +37,23 @@ export default function HomeLayout({
 
 function BottomNav() {
   const pathname = usePathname();
+  const { currentUser } = useAuth();
 
   const navItems = [
     { href: "/home/blog", label: "Blog", icon: BookOpen },
     { href: "/home/dashboard", label: "Dashboard", icon: Home },
     { href: "/home/events", label: "Events", icon: CalendarDays },
+    ...(currentUser?.isVerified
+      ? [{ href: "/home/admin", label: "Admin", icon: Shield }]
+      : []),
   ];
 
   return (
-    <nav className="fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-800/50 backdrop-blur-md shadow-lg  rounded-lg px-6 py-4 flex justify-between w-[90%] max-w-md z-50">
+    <nav
+      className={`fixed bottom-4 left-1/2 -translate-x-1/2 bg-gray-800/50 backdrop-blur-md shadow-lg rounded-lg px-6 py-4 flex justify-between w-[90%] z-50 ${
+        currentUser?.isVerified ? "max-w-lg" : "max-w-md"
+      }`}
+    >
       {navItems.map(({ href, label, icon: Icon }) => {
         const isActive = pathname === href;
         return (
