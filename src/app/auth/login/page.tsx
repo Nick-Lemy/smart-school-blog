@@ -23,7 +23,6 @@ export default function LoginPage() {
         login(response.data.access_token);
         // Redirect to dashboard after successful login
         router.push("/home/dashboard");
-        window.location.reload();
       })
       .catch((error) => {
         // Handle login error
