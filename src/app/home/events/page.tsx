@@ -167,8 +167,8 @@ export default function EventsPage() {
                       key={event.id}
                       className="bg-gray-800 justify-between border border-gray-600 shadow-sm"
                     >
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
+                      <CardHeader className="flex-1/2">
+                        <div className="flex items-start">
                           <div className="space-y-2">
                             <div className="md:w-1/2">
                               <Image
@@ -179,17 +179,17 @@ export default function EventsPage() {
                                 className="w-full h-48 md:h-full object-cover rounded-md"
                               />
                             </div>
-                            <CardTitle className="text-lg cursor-pointer text-green-500 hover:text-green-700 transition-colors">
-                              {event.title}
-                            </CardTitle>
                           </div>
                         </div>
-                        <CardDescription className="line-clamp-2 text-white">
-                          {event.description}
-                        </CardDescription>
                       </CardHeader>
 
                       <CardContent className="space-y-4">
+                        <CardTitle className="text-lg cursor-pointer text-green-500 hover:text-green-700 transition-colors">
+                          {event.title}
+                        </CardTitle>
+                        <CardDescription className="line-clamp-2 text-white">
+                          {event.description}
+                        </CardDescription>
                         <div className="space-y-2 text-sm text-gray-200">
                           <div className="flex items-center space-x-2">
                             <Calendar className="w-4 h-4 text-green-400" />
