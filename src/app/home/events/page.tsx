@@ -35,7 +35,6 @@ import {
   Users,
   Clock,
   Search,
-  Ticket,
   Loader2,
   Plus,
 } from "lucide-react";
@@ -402,7 +401,12 @@ export default function EventsPage() {
                                     : "?"}
                                 </AvatarFallback>
                               </Avatar>
-                              <span className="text-sm text-gray-400">
+                              <span
+                                className="text-sm text-gray-400 hover:text-green-500 cursor-pointer transition-colors"
+                                onClick={() =>
+                                  router.push(`/home/profile/${event.hostId}`)
+                                }
+                              >
                                 {hosts[event.hostId]?.name || "Loading..."}
                               </span>
                             </div>

@@ -222,7 +222,14 @@ export default function BlogPage() {
                   <Button className="">Read More</Button> */}
                     <p className="font-normal text-xs text-white">
                       <span className="text-green-600 font-bold">Author: </span>
-                      {post.author.name}
+                      <span
+                        className="text-white hover:text-green-500 cursor-pointer transition-colors"
+                        onClick={() =>
+                          router.push(`/home/profile/${post.author.id}`)
+                        }
+                      >
+                        {post.author.name}
+                      </span>
                     </p>
                     <p className="text-sm text-gray-500">
                       {formatDistanceToNow(new Date(post.createdAt), {

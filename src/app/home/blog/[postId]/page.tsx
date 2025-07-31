@@ -220,7 +220,10 @@ export default function UniquePostPage() {
 
           {/* Author Info */}
           <div className="flex items-center space-x-3 mb-6 pb-6 border-b border-gray-600">
-            <Avatar className="w-12 h-12">
+            <Avatar
+              className="w-12 h-12 cursor-pointer"
+              onClick={() => router.push(`/home/profile/${post.author.id}`)}
+            >
               <AvatarImage src="/placeholder.svg" />
               <AvatarFallback className="bg-gray-700 text-white">
                 {post.author.name
@@ -230,7 +233,10 @@ export default function UniquePostPage() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium text-white text-lg">
+              <p
+                className="font-medium text-white text-lg hover:text-green-500 cursor-pointer transition-colors"
+                onClick={() => router.push(`/home/profile/${post.author.id}`)}
+              >
                 {post.author.name}
               </p>
               <div className="flex items-center space-x-4 text-sm text-gray-400">
@@ -365,7 +371,12 @@ export default function UniquePostPage() {
                 return (
                   <div key={comment.id} className="bg-gray-700 rounded-lg p-4">
                     <div className="flex items-start space-x-3">
-                      <Avatar className="w-8 h-8">
+                      <Avatar
+                        className="w-8 h-8 cursor-pointer"
+                        onClick={() =>
+                          router.push(`/home/profile/${author.id}`)
+                        }
+                      >
                         <AvatarImage src="/placeholder.svg" />
                         <AvatarFallback className="bg-gray-600 text-white text-sm">
                           {author.name
@@ -377,7 +388,12 @@ export default function UniquePostPage() {
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-2">
-                            <span className="font-medium text-white">
+                            <span
+                              className="font-medium text-white hover:text-green-500 cursor-pointer transition-colors"
+                              onClick={() =>
+                                router.push(`/home/profile/${author.id}`)
+                              }
+                            >
                               {author.name}
                             </span>
                             <span className="text-xs text-gray-400">
