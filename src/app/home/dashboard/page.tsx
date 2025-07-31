@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -37,120 +37,157 @@ import {
   Clock,
   MapPin,
   LogOut,
+  Loader2,
 } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
-// import api from "@/lib/utils";
+import api from "@/lib/utils";
+import { Post, Event } from "@/lib/types";
+import { AxiosResponse } from "axios";
+import { formatDistanceToNow } from "date-fns";
 
 export default function DashboardPage() {
   const { currentUser, logout } = useAuth();
-  // Replace with actual user fetching logic
   const [activeTab, setActiveTab] = useState("my-posts");
+  const [userPosts, setUserPosts] = useState<Post[]>([]);
+  const [userEvents, setUserEvents] = useState<Event[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreatingPost, setIsCreatingPost] = useState(false);
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+  const [postDialogOpen, setPostDialogOpen] = useState(false);
+  const [eventDialogOpen, setEventDialogOpen] = useState(false);
+
   const [newPost, setNewPost] = useState({
     title: "",
     content: "",
-    category: "",
   });
   const [newEvent, setNewEvent] = useState({
     title: "",
-    description: "",
-    date: "",
-    time: "",
-    location: "",
     category: "",
+    location: "",
+    coverImage: "",
+    description: "",
+    startDate: "",
+    endDate: "",
   });
 
-  // Enhanced dummy data
-  const userPosts = [
-    {
-      id: 1,
-      title: "My Journey Learning React in Lagos",
-      excerpt:
-        "Sharing my experience learning React development while studying computer science at the University of Lagos. From beginner struggles to breakthrough moments...",
-      category: "Academic",
-      status: "Published",
-      likes: 45,
-      comments: 12,
-      views: 234,
-      createdAt: "2 days ago",
-      readTime: "5 min read",
-    },
-    {
-      id: 2,
-      title: "Best Study Spots on Campus",
-      excerpt:
-        "A comprehensive guide to the quietest and most productive study locations around campus. Perfect for exam season preparation...",
-      category: "Social",
-      status: "Draft",
-      likes: 0,
-      comments: 0,
-      views: 0,
-      createdAt: "1 week ago",
-      readTime: "3 min read",
-    },
-    {
-      id: 3,
-      title: "AI-Powered Study Techniques That Actually Work",
-      excerpt:
-        "How I used ChatGPT and other AI tools to improve my study efficiency and academic performance this semester...",
-      category: "Academic",
-      status: "Published",
-      likes: 89,
-      comments: 23,
-      views: 456,
-      createdAt: "1 week ago",
-      readTime: "7 min read",
-    },
-  ];
+  // Load user data on mount
+  useEffect(() => {
+    // Fetch user's posts
+    const fetchUserPosts = async () => {
+      if (!currentUser) return;
+      try {
+        const response: AxiosResponse<Post[]> = await api.get(
+          `/posts/user/${currentUser.id}`
+        );
+        setUserPosts(response.data);
+      } catch (error) {
+        console.error("Error fetching user posts:", error);
+      }
+    };
 
-  const userEvents = [
-    {
-      id: 1,
-      title: "Tech Meetup: AI in Education",
-      date: "March 20, 2025",
-      time: "3:00 PM",
-      location: "University of Lagos - Engineering Block",
-      attendees: 45,
-      status: "Upcoming",
-      category: "Academic",
-    },
-    {
-      id: 2,
-      title: "Study Group: Data Structures & Algorithms",
-      date: "March 18, 2025",
-      time: "6:00 PM",
-      location: "Library Room 204",
-      attendees: 12,
-      status: "Upcoming",
-      category: "Academic",
-    },
-    {
-      id: 3,
-      title: "Campus Innovation Challenge",
-      date: "March 25, 2025",
-      time: "10:00 AM",
-      location: "Main Auditorium",
-      attendees: 120,
-      status: "Upcoming",
-      category: "Competition",
-    },
-  ];
+    // Fetch user's events
+    const fetchUserEvents = async () => {
+      if (!currentUser) return;
+      try {
+        const response: AxiosResponse<Event[]> = await api.get(
+          `/event/user/${currentUser.id}`
+        );
+        setUserEvents(response.data);
+      } catch (error) {
+        console.error("Error fetching user events:", error);
+      }
+    };
 
-  const handleCreatePost = () => {
-    console.log("Creating post:", newPost);
-    setNewPost({ title: "", content: "", category: "" });
+    const loadUserData = async () => {
+      if (currentUser) {
+        setIsLoading(true);
+        await Promise.all([fetchUserPosts(), fetchUserEvents()]);
+        setIsLoading(false);
+      }
+    };
+    loadUserData();
+  }, [currentUser]);
+
+  const handleCreatePost = async () => {
+    if (!newPost.title || !newPost.content) return;
+
+    setIsCreatingPost(true);
+    try {
+      const response: AxiosResponse<Post> = await api.post("/posts", {
+        title: newPost.title,
+        content: newPost.content,
+      });
+
+      setUserPosts((prev) => [response.data, ...prev]);
+      setNewPost({ title: "", content: "" });
+      setPostDialogOpen(false);
+    } catch (error) {
+      console.error("Error creating post:", error);
+    } finally {
+      setIsCreatingPost(false);
+    }
   };
 
-  const handleCreateEvent = () => {
-    console.log("Creating event:", newEvent);
-    setNewEvent({
-      title: "",
-      description: "",
-      date: "",
-      time: "",
-      location: "",
-      category: "",
-    });
+  const handleCreateEvent = async () => {
+    if (
+      !newEvent.title ||
+      !newEvent.description ||
+      !newEvent.startDate ||
+      !newEvent.endDate
+    )
+      return;
+
+    setIsCreatingEvent(true);
+    try {
+      // Convert datetime-local format to ISO-8601 format
+      const startDateISO = new Date(newEvent.startDate).toISOString();
+      const endDateISO = new Date(newEvent.endDate).toISOString();
+
+      const response: AxiosResponse<Event> = await api.post("/event", {
+        title: newEvent.title,
+        category: newEvent.category,
+        location: newEvent.location,
+        coverImage: newEvent.coverImage,
+        description: newEvent.description,
+        startDate: startDateISO,
+        endDate: endDateISO,
+      });
+
+      setUserEvents((prev) => [response.data, ...prev]);
+      setNewEvent({
+        title: "",
+        category: "",
+        location: "",
+        coverImage: "",
+        description: "",
+        startDate: "",
+        endDate: "",
+      });
+      setEventDialogOpen(false);
+    } catch (error) {
+      console.error("Error creating event:", error);
+    } finally {
+      setIsCreatingEvent(false);
+    }
+  };
+
+  const handleDeletePost = async (postId: number) => {
+    try {
+      await api.delete(`/posts/${postId}`);
+      setUserPosts((prev) => prev.filter((post) => post.id !== postId));
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
+
+  const handleDeleteEvent = async (eventId: number) => {
+    try {
+      await api.delete(`/event/${eventId}`);
+      setUserEvents((prev) => prev.filter((event) => event.id !== eventId));
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
   };
 
   return (
@@ -192,11 +229,15 @@ export default function DashboardPage() {
         <div className="grid gap-8">
           <div className="grid grid-cols-2 gap-4 pt-5 text-center">
             <Card className="bg-gray-800 border-gray-600 text-white">
-              <div className="text-2xl font-bold text-white">12</div>
+              <div className="text-2xl font-bold text-white">
+                {userPosts.length}
+              </div>
               <div className="text-xs text-gray-400">Posts Published</div>
             </Card>
             <Card className="bg-gray-800 border-gray-600 text-white">
-              <div className="text-2xl font-bold text-white">5</div>
+              <div className="text-2xl font-bold text-white">
+                {userEvents.length}
+              </div>
               <div className="text-xs text-gray-400">Events Created</div>
             </Card>
           </div>
@@ -209,7 +250,7 @@ export default function DashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Dialog>
+                <Dialog open={postDialogOpen} onOpenChange={setPostDialogOpen}>
                   <DialogTrigger asChild>
                     <Button className="w-full bg-green-600 text-black font-semibold hover:bg-green-700">
                       <Plus className="mr-2 h-4 w-4" />
@@ -235,21 +276,6 @@ export default function DashboardPage() {
                         }
                         className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
                       />
-                      <Select
-                        onValueChange={(value) =>
-                          setNewPost({ ...newPost, category: value })
-                        }
-                      >
-                        <SelectTrigger className="bg-gray-700 text-white border-gray-600">
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-gray-700 text-white border-gray-600">
-                          <SelectItem value="academic">Academic</SelectItem>
-                          <SelectItem value="social">Social</SelectItem>
-                          <SelectItem value="technology">Technology</SelectItem>
-                          <SelectItem value="career">Career</SelectItem>
-                        </SelectContent>
-                      </Select>
                       <Textarea
                         placeholder="Write your post content here. Share your insights, experiences, or ask questions..."
                         rows={8}
@@ -263,21 +289,35 @@ export default function DashboardPage() {
                         <Button
                           variant="outline"
                           className="text-white border-gray-600 hover:bg-gray-700"
+                          onClick={() => setPostDialogOpen(false)}
                         >
-                          Save Draft
+                          Cancel
                         </Button>
                         <Button
                           className="bg-green-600 text-black font-semibold hover:bg-green-700"
                           onClick={handleCreatePost}
+                          disabled={
+                            isCreatingPost || !newPost.title || !newPost.content
+                          }
                         >
-                          Publish Post
+                          {isCreatingPost ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Creating...
+                            </>
+                          ) : (
+                            "Publish Post"
+                          )}
                         </Button>
                       </div>
                     </div>
                   </DialogContent>
                 </Dialog>
 
-                <Dialog>
+                <Dialog
+                  open={eventDialogOpen}
+                  onOpenChange={setEventDialogOpen}
+                >
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
@@ -305,23 +345,50 @@ export default function DashboardPage() {
                         }
                         className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
                       />
+                      <Input
+                        placeholder="Cover Image URL (optional)"
+                        value={newEvent.coverImage}
+                        onChange={(e) =>
+                          setNewEvent({
+                            ...newEvent,
+                            coverImage: e.target.value,
+                          })
+                        }
+                        className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                      />
                       <div className="grid grid-cols-2 gap-4">
-                        <Input
-                          type="date"
-                          value={newEvent.date}
-                          onChange={(e) =>
-                            setNewEvent({ ...newEvent, date: e.target.value })
-                          }
-                          className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
-                        />
-                        <Input
-                          type="time"
-                          value={newEvent.time}
-                          onChange={(e) =>
-                            setNewEvent({ ...newEvent, time: e.target.value })
-                          }
-                          className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
-                        />
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Start Date & Time
+                          </label>
+                          <Input
+                            type="datetime-local"
+                            value={newEvent.startDate}
+                            onChange={(e) =>
+                              setNewEvent({
+                                ...newEvent,
+                                startDate: e.target.value,
+                              })
+                            }
+                            className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            End Date & Time
+                          </label>
+                          <Input
+                            type="datetime-local"
+                            value={newEvent.endDate}
+                            onChange={(e) =>
+                              setNewEvent({
+                                ...newEvent,
+                                endDate: e.target.value,
+                              })
+                            }
+                            className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
+                          />
+                        </div>
                       </div>
                       <Input
                         placeholder="Location (e.g., Library Room 204)"
@@ -340,11 +407,11 @@ export default function DashboardPage() {
                           <SelectValue placeholder="Event category" />
                         </SelectTrigger>
                         <SelectContent className="bg-gray-700 text-white border-gray-600">
-                          <SelectItem value="academic">Academic</SelectItem>
-                          <SelectItem value="social">Social</SelectItem>
-                          <SelectItem value="cultural">Cultural</SelectItem>
-                          <SelectItem value="sports">Sports</SelectItem>
-                          <SelectItem value="competition">
+                          <SelectItem value="Academic">Academic</SelectItem>
+                          <SelectItem value="Social">Social</SelectItem>
+                          <SelectItem value="Cultural">Cultural</SelectItem>
+                          <SelectItem value="Sports">Sports</SelectItem>
+                          <SelectItem value="Competition">
                             Competition
                           </SelectItem>
                         </SelectContent>
@@ -361,12 +428,35 @@ export default function DashboardPage() {
                         }
                         className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
                       />
-                      <Button
-                        className="w-full bg-green-600 text-black font-semibold hover:bg-green-700"
-                        onClick={handleCreateEvent}
-                      >
-                        Create Event
-                      </Button>
+                      <div className="flex justify-end space-x-2">
+                        <Button
+                          variant="outline"
+                          className="text-white border-gray-600 hover:bg-gray-700"
+                          onClick={() => setEventDialogOpen(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          className="bg-green-600 text-black font-semibold hover:bg-green-700"
+                          onClick={handleCreateEvent}
+                          disabled={
+                            isCreatingEvent ||
+                            !newEvent.title ||
+                            !newEvent.description ||
+                            !newEvent.startDate ||
+                            !newEvent.endDate
+                          }
+                        >
+                          {isCreatingEvent ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Creating...
+                            </>
+                          ) : (
+                            "Create Event"
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   </DialogContent>
                 </Dialog>
@@ -399,291 +489,150 @@ export default function DashboardPage() {
               <TabsContent value="my-posts" className="space-y-6 mt-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-bold text-white">My Posts</h2>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="bg-green-600 text-black font-semibold hover:bg-green-700">
-                        <Plus className=" h-4 w-4" />
-                        Create Post
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
-                      <DialogHeader>
-                        <DialogTitle className="text-white">
-                          Create New Post
-                        </DialogTitle>
-                        <DialogDescription className="text-gray-400">
-                          Share your knowledge and experiences with the
-                          SmartSchool community
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <Input
-                          placeholder="Enter an engaging post title..."
-                          value={newPost.title}
-                          onChange={(e) =>
-                            setNewPost({ ...newPost, title: e.target.value })
-                          }
-                          className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
-                        />
-                        <Select
-                          onValueChange={(value) =>
-                            setNewPost({ ...newPost, category: value })
-                          }
-                        >
-                          <SelectTrigger className="bg-gray-700 text-white border-gray-600">
-                            <SelectValue placeholder="Select category" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-gray-700 text-white border-gray-600">
-                            <SelectItem value="academic">Academic</SelectItem>
-                            <SelectItem value="social">Social</SelectItem>
-                            <SelectItem value="technology">
-                              Technology
-                            </SelectItem>
-                            <SelectItem value="career">Career</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Textarea
-                          placeholder="Write your post content here. Share your insights, experiences, or ask questions..."
-                          rows={8}
-                          value={newPost.content}
-                          onChange={(e) =>
-                            setNewPost({ ...newPost, content: e.target.value })
-                          }
-                          className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
-                        />
-                        <div className="flex justify-end space-x-2">
-                          <Button
-                            variant="outline"
-                            className="text-white border-gray-600 hover:bg-gray-700"
-                          >
-                            Save Draft
-                          </Button>
-                          <Button
-                            className="bg-green-600 text-black font-semibold hover:bg-green-700"
-                            onClick={handleCreatePost}
-                          >
-                            Publish Post
-                          </Button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
                 </div>
 
                 <div className="space-y-4">
-                  {userPosts.map((post) => (
-                    <Card
-                      key={post.id}
-                      className="bg-gray-800  text-white hover:shadow-md transition-shadow"
-                    >
-                      <CardHeader>
-                        <div className="flex relative items-center justify-between">
-                          <div className="flex absolute  rounded-full w-fit -top-2 -right-3 py-0.5 bg-red-500/20 ">
-                            {/* <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-white hover:text-green-500"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button> */}
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-red-500  px-4 hover:text-red-700"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="animate-spin mr-2 w-4 h-4" />
+                      <span className="text-white">Loading posts...</span>
+                    </div>
+                  ) : userPosts.length > 0 ? (
+                    userPosts.map((post) => (
+                      <Card
+                        key={post.id}
+                        className="bg-gray-800  text-white hover:shadow-md transition-shadow"
+                      >
+                        <CardHeader>
+                          <div className="flex relative items-center justify-between">
+                            <div className="flex absolute  rounded-full w-fit -top-2 -right-3 py-0.5 bg-red-500/20 ">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-500  px-4 hover:text-red-700"
+                                onClick={() => handleDeletePost(post.id)}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                        <CardTitle className="text-lg text-green-500 hover:text-green-400 cursor-pointer">
-                          {post.title}
-                        </CardTitle>
-                        <CardDescription className="text-gray-400 line-clamp-2">
-                          {post.excerpt}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center justify-between text-sm text-gray-400">
-                          <div className="flex items-center space-x-4">
-                            <span className="flex items-center space-x-1 hover:text-red-500 cursor-pointer">
-                              <Heart className="w-4 h-4" />
-                              <span>{post.likes}</span>
-                            </span>
-                            <span className="flex items-center space-x-1 hover:text-green-500 cursor-pointer">
-                              <MessageCircle className="w-4 h-4" />
-                              <span>{post.comments}</span>
+                          <CardTitle className="text-lg text-green-500 hover:text-green-400 cursor-pointer">
+                            {post.title}
+                          </CardTitle>
+                          <CardDescription className="text-gray-400 line-clamp-2">
+                            {post.content.slice(0, 150)}...
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="flex items-center justify-between text-sm text-gray-400">
+                            <div className="flex items-center space-x-4">
+                              <span className="flex items-center space-x-1 hover:text-red-500 cursor-pointer">
+                                <Heart className="w-4 h-4" />
+                                <span>{post.likes.length}</span>
+                              </span>
+                              <span className="flex items-center space-x-1 hover:text-green-500 cursor-pointer">
+                                <MessageCircle className="w-4 h-4" />
+                                <span>{post.comments.length}</span>
+                              </span>
+                            </div>
+                            <span className="flex items-center space-x-1">
+                              <Clock className="w-4 h-4" />
+                              <span>
+                                {formatDistanceToNow(new Date(post.createdAt), {
+                                  addSuffix: true,
+                                })}
+                              </span>
                             </span>
                           </div>
-                          <span className="flex items-center space-x-1">
-                            <Clock className="w-4 h-4" />
-                            <span>{post.createdAt}</span>
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-400">
+                        No posts yet. Create your first post!
+                      </p>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
 
               <TabsContent value="my-events" className="space-y-6 mt-6">
                 <div className="flex items-center justify-between">
                   <h2 className="text-2xl font-bold text-white">My Events</h2>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="bg-green-600 text-black font-semibold hover:bg-green-700">
-                        <Plus className="h-4 w-4" />
-                        Create Event
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
-                      <DialogHeader>
-                        <DialogTitle className="text-white">
-                          Create New Event
-                        </DialogTitle>
-                        <DialogDescription className="text-gray-400">
-                          Organize study groups, meetups, or campus activities
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <Input
-                          placeholder="Event title (e.g., Python Study Group)"
-                          value={newEvent.title}
-                          onChange={(e) =>
-                            setNewEvent({ ...newEvent, title: e.target.value })
-                          }
-                          className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
-                        />
-                        <div className="grid grid-cols-2 gap-4">
-                          <Input
-                            type="date"
-                            value={newEvent.date}
-                            onChange={(e) =>
-                              setNewEvent({ ...newEvent, date: e.target.value })
-                            }
-                            className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
-                          />
-                          <Input
-                            type="time"
-                            value={newEvent.time}
-                            onChange={(e) =>
-                              setNewEvent({ ...newEvent, time: e.target.value })
-                            }
-                            className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
-                          />
-                        </div>
-                        <Input
-                          placeholder="Location (e.g., Library Room 204)"
-                          value={newEvent.location}
-                          onChange={(e) =>
-                            setNewEvent({
-                              ...newEvent,
-                              location: e.target.value,
-                            })
-                          }
-                          className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
-                        />
-                        <Select
-                          onValueChange={(value) =>
-                            setNewEvent({ ...newEvent, category: value })
-                          }
-                        >
-                          <SelectTrigger className="bg-gray-700 text-white border-gray-600">
-                            <SelectValue placeholder="Event category" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-gray-700 text-white border-gray-600">
-                            <SelectItem value="academic">Academic</SelectItem>
-                            <SelectItem value="social">Social</SelectItem>
-                            <SelectItem value="cultural">Cultural</SelectItem>
-                            <SelectItem value="sports">Sports</SelectItem>
-                            <SelectItem value="competition">
-                              Competition
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Textarea
-                          placeholder="Describe your event, what participants can expect, requirements, etc..."
-                          rows={4}
-                          value={newEvent.description}
-                          onChange={(e) =>
-                            setNewEvent({
-                              ...newEvent,
-                              description: e.target.value,
-                            })
-                          }
-                          className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
-                        />
-                        <Button
-                          className="w-full bg-green-600 text-black font-semibold hover:bg-green-700"
-                          onClick={handleCreateEvent}
-                        >
-                          Create Event
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
                 </div>
 
                 <div className="space-y-4">
-                  {userEvents.map((event) => (
-                    <Card
-                      key={event.id}
-                      className="bg-gray-800 border-gray-600 text-white hover:shadow-md transition-shadow"
-                    >
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <CardTitle className="text-lg text-green-500 hover:text-green-400 cursor-pointer">
-                              {event.title}
-                            </CardTitle>
-                          </div>
-                          <div className="flex relative items-center justify-between">
-                            <div className="flex absolute  rounded-full w-fit  -right-3 py-0.5 bg-red-500/20 ">
-                              {/* <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-white hover:text-green-500"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button> */}
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-500  px-4 hover:text-red-700"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="animate-spin mr-2 w-4 h-4" />
+                      <span className="text-white">Loading events...</span>
+                    </div>
+                  ) : userEvents.length > 0 ? (
+                    userEvents.map((event) => (
+                      <Card
+                        key={event.id}
+                        className="bg-gray-800 border-gray-600 text-white hover:shadow-md transition-shadow"
+                      >
+                        <CardHeader>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <CardTitle className="text-lg text-green-500 hover:text-green-400 cursor-pointer">
+                                {event.title}
+                              </CardTitle>
+                            </div>
+                            <div className="flex relative items-center justify-between">
+                              <div className="flex absolute  rounded-full w-fit  -right-3 py-0.5 bg-red-500/20 ">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-500  px-4 hover:text-red-700"
+                                  onClick={() => handleDeleteEvent(event.id)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-2 text-sm text-gray-400 mb-4">
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="w-4 h-4 text-green-400" />
-                            <span>
-                              {event.date} at {event.time}
-                            </span>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-2 text-sm text-gray-400 mb-4">
+                            <div className="flex items-center space-x-2">
+                              <Calendar className="w-4 h-4 text-green-400" />
+                              <span>
+                                {new Date(event.startDate).toLocaleDateString()}{" "}
+                                - {new Date(event.endDate).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <MapPin className="w-4 h-4 text-green-400" />
+                              <span>{event.location}</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Users className="w-4 h-4 text-green-400" />
+                              <span>
+                                {event.attendees.length} attendees registered
+                              </span>
+                            </div>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <MapPin className="w-4 h-4 text-green-400" />
-                            <span>{event.location}</span>
+                          <div className="flex w-full items-center space-x-2">
+                            <Button
+                              variant="outline"
+                              className="text-black w-full"
+                            >
+                              View Details
+                            </Button>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <Users className="w-4 h-4 text-green-400" />
-                            <span>{event.attendees} attendees registered</span>
-                          </div>
-                        </div>
-                        <div className="flex w-full items-center space-x-2">
-                          <Button
-                            variant="outline"
-                            className="text-black w-full"
-                          >
-                            View Details
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-400">
+                        No events yet. Create your first event!
+                      </p>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
             </Tabs>

@@ -8,10 +8,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Post } from "@/lib/types";
 import api from "@/lib/utils";
 import { AxiosResponse } from "axios";
-import { Sparkles, Search, Loader2 } from "lucide-react";
+import { Sparkles, Search, Loader2, Plus } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useState, useEffect } from "react";
 
@@ -19,6 +28,13 @@ export default function BlogPage() {
   const [feedPosts, setFeedPosts] = useState<Post[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreatingPost, setIsCreatingPost] = useState(false);
+  const [postDialogOpen, setPostDialogOpen] = useState(false);
+  const [newPost, setNewPost] = useState({
+    title: "",
+    content: "",
+  });
+
   const fetchPosts = async () => {
     try {
       const response: AxiosResponse<Post[]> = await api.get("/posts");
@@ -28,6 +44,28 @@ export default function BlogPage() {
       return [];
     }
   };
+
+  const handleCreatePost = async () => {
+    if (!newPost.title || !newPost.content) return;
+
+    setIsCreatingPost(true);
+    try {
+      const response: AxiosResponse<Post> = await api.post("/posts", {
+        title: newPost.title,
+        content: newPost.content,
+      });
+
+      setFeedPosts((prev) => [response.data, ...prev]);
+      setNewPost({ title: "", content: "" });
+      setPostDialogOpen(false);
+    } catch (error) {
+      console.error("Error creating post:", error);
+    } finally {
+      window.location.reload();
+      setIsCreatingPost(false);
+    }
+  };
+
   const filteredPosts = feedPosts.filter(
     (post) =>
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -55,7 +93,69 @@ export default function BlogPage() {
               <h1 className="text-xl font-bold text-green-600">Posts</h1>
             </div>
             <Button className="bg-green-600 text-black font-semibold">
-              Create Post
+              <Dialog open={postDialogOpen} onOpenChange={setPostDialogOpen}>
+                <DialogTrigger asChild>
+                  <span>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Post
+                  </span>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
+                  <DialogHeader>
+                    <DialogTitle className="text-white">
+                      Create New Post
+                    </DialogTitle>
+                    <DialogDescription className="text-gray-400">
+                      Share your knowledge and experiences with the SmartSchool
+                      community
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Input
+                      placeholder="Enter an engaging post title..."
+                      value={newPost.title}
+                      onChange={(e) =>
+                        setNewPost({ ...newPost, title: e.target.value })
+                      }
+                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                    />
+                    <Textarea
+                      placeholder="Write your post content here. Share your insights, experiences, or ask questions..."
+                      rows={8}
+                      value={newPost.content}
+                      onChange={(e) =>
+                        setNewPost({ ...newPost, content: e.target.value })
+                      }
+                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                    />
+                    <div className="flex justify-end space-x-2">
+                      <Button
+                        variant="outline"
+                        className="text-white border-gray-600 hover:bg-gray-700"
+                        onClick={() => setPostDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="bg-green-600 text-black font-semibold hover:bg-green-700"
+                        onClick={handleCreatePost}
+                        disabled={
+                          isCreatingPost || !newPost.title || !newPost.content
+                        }
+                      >
+                        {isCreatingPost ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Creating...
+                          </>
+                        ) : (
+                          "Publish Post"
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </Button>
           </div>
         </div>
@@ -74,7 +174,7 @@ export default function BlogPage() {
             />
           </div>
         </div>
-        <div className="space-y-6 py-4 grid grid-cols-1 md:grid-cols-2 w-full">
+        <div className="gap-6 py-4 grid grid-cols-1 md:grid-cols-2 w-full">
           {filteredPosts.length > 0 ? (
             filteredPosts.map((post) => (
               <Card

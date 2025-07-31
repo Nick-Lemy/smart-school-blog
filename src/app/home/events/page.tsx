@@ -11,6 +11,22 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   Calendar,
@@ -20,6 +36,7 @@ import {
   Search,
   Ticket,
   Loader2,
+  Plus,
 } from "lucide-react";
 import Image from "next/image";
 import { Event, User } from "@/lib/types";
@@ -32,6 +49,17 @@ export default function EventsPage() {
   const [hosts, setHosts] = useState<{ [key: number]: User }>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+  const [eventDialogOpen, setEventDialogOpen] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    category: "",
+    location: "",
+    coverImage: "",
+    description: "",
+    startDate: "",
+    endDate: "",
+  });
 
   const fetchEvents = async () => {
     try {
@@ -50,6 +78,49 @@ export default function EventsPage() {
     } catch (error) {
       console.error(`Error fetching host ${hostId}:`, error);
       return null;
+    }
+  };
+
+  const handleCreateEvent = async () => {
+    if (
+      !newEvent.title ||
+      !newEvent.description ||
+      !newEvent.startDate ||
+      !newEvent.endDate
+    )
+      return;
+
+    setIsCreatingEvent(true);
+    try {
+      // Convert datetime-local format to ISO-8601 format
+      const startDateISO = new Date(newEvent.startDate).toISOString();
+      const endDateISO = new Date(newEvent.endDate).toISOString();
+
+      const response: AxiosResponse<Event> = await api.post("/event", {
+        title: newEvent.title,
+        category: newEvent.category,
+        location: newEvent.location,
+        coverImage: newEvent.coverImage,
+        description: newEvent.description,
+        startDate: startDateISO,
+        endDate: endDateISO,
+      });
+
+      setEvents((prev) => [response.data, ...prev]);
+      setNewEvent({
+        title: "",
+        category: "",
+        location: "",
+        coverImage: "",
+        description: "",
+        startDate: "",
+        endDate: "",
+      });
+      setEventDialogOpen(false);
+    } catch (error) {
+      console.error("Error creating event:", error);
+    } finally {
+      setIsCreatingEvent(false);
     }
   };
 
@@ -101,7 +172,141 @@ export default function EventsPage() {
               <h1 className="text-xl font-bold text-green-600">Events</h1>
             </div>
             <Button className="bg-green-600 text-black font-semibold">
-              Create Event
+              <Dialog open={eventDialogOpen} onOpenChange={setEventDialogOpen}>
+                <DialogTrigger asChild>
+                  <span>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Event
+                  </span>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
+                  <DialogHeader>
+                    <DialogTitle className="text-white">
+                      Create New Event
+                    </DialogTitle>
+                    <DialogDescription className="text-gray-400">
+                      Organize study groups, meetups, or campus activities
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <Input
+                      placeholder="Event title (e.g., Python Study Group)"
+                      value={newEvent.title}
+                      onChange={(e) =>
+                        setNewEvent({ ...newEvent, title: e.target.value })
+                      }
+                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                    />
+                    <Input
+                      placeholder="Cover Image URL (optional)"
+                      value={newEvent.coverImage}
+                      onChange={(e) =>
+                        setNewEvent({ ...newEvent, coverImage: e.target.value })
+                      }
+                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Start Date & Time
+                        </label>
+                        <Input
+                          type="datetime-local"
+                          value={newEvent.startDate}
+                          onChange={(e) =>
+                            setNewEvent({
+                              ...newEvent,
+                              startDate: e.target.value,
+                            })
+                          }
+                          className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          End Date & Time
+                        </label>
+                        <Input
+                          type="datetime-local"
+                          value={newEvent.endDate}
+                          onChange={(e) =>
+                            setNewEvent({
+                              ...newEvent,
+                              endDate: e.target.value,
+                            })
+                          }
+                          className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
+                        />
+                      </div>
+                    </div>
+                    <Input
+                      placeholder="Location (e.g., Library Room 204)"
+                      value={newEvent.location}
+                      onChange={(e) =>
+                        setNewEvent({ ...newEvent, location: e.target.value })
+                      }
+                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                    />
+                    <Select
+                      onValueChange={(value) =>
+                        setNewEvent({ ...newEvent, category: value })
+                      }
+                    >
+                      <SelectTrigger className="bg-gray-700 text-white border-gray-600">
+                        <SelectValue placeholder="Event category" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-700 text-white border-gray-600">
+                        <SelectItem value="Academic">Academic</SelectItem>
+                        <SelectItem value="Social">Social</SelectItem>
+                        <SelectItem value="Cultural">Cultural</SelectItem>
+                        <SelectItem value="Sports">Sports</SelectItem>
+                        <SelectItem value="Competition">Competition</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Textarea
+                      placeholder="Describe your event, what participants can expect, requirements, etc..."
+                      rows={4}
+                      value={newEvent.description}
+                      onChange={(e) =>
+                        setNewEvent({
+                          ...newEvent,
+                          description: e.target.value,
+                        })
+                      }
+                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                    />
+                    <div className="flex justify-end space-x-2">
+                      <Button
+                        variant="outline"
+                        className="text-white border-gray-600 hover:bg-gray-700"
+                        onClick={() => setEventDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className="bg-green-600 text-black font-semibold hover:bg-green-700"
+                        onClick={handleCreateEvent}
+                        disabled={
+                          isCreatingEvent ||
+                          !newEvent.title ||
+                          !newEvent.description ||
+                          !newEvent.startDate ||
+                          !newEvent.endDate
+                        }
+                      >
+                        {isCreatingEvent ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Creating...
+                          </>
+                        ) : (
+                          "Create Event"
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </Button>
           </div>
         </div>
