@@ -1,4 +1,4 @@
-"use client";
+"use server";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,39 +8,45 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Post } from "@/lib/types";
+import api from "@/lib/utils";
+import { AxiosResponse } from "axios";
 import { Sparkles, Search } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
-export default function BlogPage() {
+export default async function BlogPage() {
   // Sample data
-  const feedPosts = [
-    {
-      id: 1,
-      title: "The Future of Renewable Energy in Africa",
-      excerpt: "Exploring sustainable energy solutions across the continent...",
-      author: "Amina Hassan",
-      avatar: "/placeholder.svg?height=40&width=40",
-      category: "Academic",
-      likes: 89,
-      comments: 23,
-      timeAgo: "3 hours ago",
-      aiSummary:
-        "Africa has immense potential for renewable energy development, particularly in solar and wind power sectors.",
-    },
-    {
-      id: 2,
-      title: "Campus Food Review: Best Local Dishes",
-      excerpt:
-        "Rating the most delicious and affordable meals around campus...",
-      author: "John Ochieng",
-      avatar: "/placeholder.svg?height=40&width=40",
-      category: "Social",
-      likes: 156,
-      comments: 34,
-      timeAgo: "5 hours ago",
-      aiSummary:
-        "Local campus eateries offer diverse, affordable African cuisine with excellent taste and nutritional value.",
-    },
-  ];
+  const response: AxiosResponse<Post[]> = await api.get("/posts");
+  const feedPosts = response.data;
+  // const feedPosts = [
+  //   {
+  //     id: 1,
+  //     title: "The Future of Renewable Energy in Africa",
+  //     excerpt: "Exploring sustainable energy solutions across the continent...",
+  //     author: "Amina Hassan",
+  //     avatar: "/placeholder.svg?height=40&width=40",
+  //     category: "Academic",
+  //     likes: 89,
+  //     comments: 23,
+  //     timeAgo: "3 hours ago",
+  //     aiSummary:
+  //       "Africa has immense potential for renewable energy development, particularly in solar and wind power sectors.",
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Campus Food Review: Best Local Dishes",
+  //     excerpt:
+  //       "Rating the most delicious and affordable meals around campus...",
+  //     author: "John Ochieng",
+  //     avatar: "/placeholder.svg?height=40&width=40",
+  //     category: "Social",
+  //     likes: 156,
+  //     comments: 34,
+  //     timeAgo: "5 hours ago",
+  //     aiSummary:
+  //       "Local campus eateries offer diverse, affordable African cuisine with excellent taste and nutritional value.",
+  //   },
+  // ];
 
   return (
     <main className="min-h-screen ">
@@ -68,15 +74,18 @@ export default function BlogPage() {
             />
           </div>
         </div>
-        <div className="space-y-6">
+        <div className="space-y-6 py-4 grid grid-cols-1 md:grid-cols-2 w-full">
           {feedPosts.map((post) => (
-            <Card key={post.id} className=" border-0 shadow-0">
+            <Card
+              key={post.id}
+              className="border rounded-lg border-gray-800/50 shadow-0"
+            >
               <CardHeader>
                 <CardTitle className="text-xl cursor-pointer text-green-600 transition-colors">
                   {post.title}
                 </CardTitle>
                 <CardDescription className="text-white font-normal">
-                  {post.excerpt}
+                  {post.content.slice(0, 100)}...
                 </CardDescription>
               </CardHeader>
 
@@ -109,9 +118,13 @@ export default function BlogPage() {
                   <Button className="">Read More</Button> */}
                   <p className="font-normal text-xs text-white">
                     <span className="text-green-600 font-bold">Author: </span>
-                    {post.author}
+                    {post.author.name}
                   </p>
-                  <p className="text-sm text-gray-500">{post.timeAgo}</p>
+                  <p className="text-sm text-gray-500">
+                    {formatDistanceToNow(new Date(post.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </p>
                 </div>
               </CardContent>
             </Card>
