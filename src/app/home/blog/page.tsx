@@ -20,7 +20,7 @@ import {
 import { Post } from "@/lib/types";
 import api from "@/lib/utils";
 import { AxiosResponse } from "axios";
-import { Sparkles, Search, Loader2, Plus } from "lucide-react";
+import { Sparkles, Search, Loader2, Plus, RefreshCw } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -32,6 +32,9 @@ export default function BlogPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
   const [postDialogOpen, setPostDialogOpen] = useState(false);
+  const [regeneratingPostId, setRegeneratingPostId] = useState<number | null>(
+    null
+  );
   const [newPost, setNewPost] = useState({
     title: "",
     content: "",
@@ -65,6 +68,28 @@ export default function BlogPage() {
       console.error("Error creating post:", error);
     } finally {
       setIsCreatingPost(false);
+    }
+  };
+
+  const handleRegenerateAISummary = async (postId: number) => {
+    setRegeneratingPostId(postId);
+    try {
+      const response: AxiosResponse<{ content: string }> = await api.get(
+        `/posts/${postId}/summary`
+      );
+
+      // Update the specific post in the feedPosts array
+      setFeedPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? { ...post, aiSummary: response.data.content }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error("Error regenerating AI summary:", error);
+    } finally {
+      setRegeneratingPostId(null);
     }
   };
 
@@ -194,19 +219,39 @@ export default function BlogPage() {
                 </CardHeader>
 
                 <CardContent className="space-y-4">
-                  <div className="bg-gray-600/50 border-l-4 border-green-400 p-3 rounded">
-                    <div className="flex items-start justif space-x-2">
-                      <Sparkles className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                      <div>
-                        <p className="text-xs font-medium text-green-500 mb-1">
-                          AI SUMMARY
-                        </p>
-                        <p className="text-sm text-gray-300 font-thin">
-                          {post.aiSummary}
-                        </p>
+                  {post.aiSummary && (
+                    <div className="bg-gray-600/50 border-l-4 border-green-400 p-3 rounded">
+                      <div className="flex items-start justify-between space-x-2">
+                        <div className="flex items-start space-x-2 flex-1">
+                          <Sparkles className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-xs font-medium text-green-500">
+                                AI SUMMARY
+                              </p>
+                              <button
+                                onClick={() =>
+                                  handleRegenerateAISummary(post.id)
+                                }
+                                disabled={regeneratingPostId === post.id}
+                                className="flex items-center space-x-1 text-green-500 hover:text-green-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                title="Regenerate AI Summary"
+                              >
+                                {regeneratingPostId === post.id ? (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  <RefreshCw className="w-3 h-3" />
+                                )}
+                              </button>
+                            </div>
+                            <p className="text-sm text-gray-300 font-thin">
+                              {post.aiSummary}
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
                   <div className="flex items-center justify-between w-full">
                     {/* <div className="flex items-center space-x-6">

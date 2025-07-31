@@ -15,6 +15,7 @@ import {
   Calendar,
   User,
   Trash2,
+  RefreshCw,
 } from "lucide-react";
 import { Post, Comment, User as UserType } from "@/lib/types";
 import api from "@/lib/utils";
@@ -40,6 +41,7 @@ export default function UniquePostPage() {
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [userHasLiked, setUserHasLiked] = useState(false);
+  const [isRegeneratingAI, setIsRegeneratingAI] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -153,6 +155,30 @@ export default function UniquePostPage() {
     }
   };
 
+  const handleRegenerateAISummary = async () => {
+    if (!post) return;
+
+    setIsRegeneratingAI(true);
+    try {
+      const response: AxiosResponse<{ content: string }> = await api.get(
+        `/posts/${postId}/summary`
+      );
+
+      // Update the post with the new AI summary
+      setPost((prevPost) => {
+        if (!prevPost) return prevPost;
+        return {
+          ...prevPost,
+          aiSummary: response.data.content,
+        };
+      });
+    } catch (error) {
+      console.error("Error regenerating AI summary:", error);
+    } finally {
+      setIsRegeneratingAI(false);
+    }
+  };
+
   const handleDeleteComment = async (commentId: number) => {
     try {
       await api.delete(`/comment/${commentId}`);
@@ -262,19 +288,47 @@ export default function UniquePostPage() {
           </div>
 
           {/* AI Summary */}
-          {post.aiSummary && (
-            <div className="bg-green-500/10 border-l-4 border-green-400 p-4 rounded mb-6">
-              <div className="flex items-start space-x-2">
+          <div className="bg-green-500/10 border-l-4 border-green-400 p-4 rounded mb-6">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start space-x-2 flex-1">
                 <Sparkles className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-green-500 mb-2">
-                    AI SUMMARY
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm font-medium text-green-500">
+                      AI SUMMARY
+                    </p>
+                    <button
+                      onClick={handleRegenerateAISummary}
+                      disabled={isRegeneratingAI}
+                      className="flex items-center space-x-1 text-green-500 hover:text-green-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={
+                        post.aiSummary
+                          ? "Regenerate AI Summary"
+                          : "Generate AI Summary"
+                      }
+                    >
+                      {isRegeneratingAI ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <RefreshCw className="w-4 h-4" />
+                      )}
+                      <span className="text-xs">
+                        {isRegeneratingAI
+                          ? "Generating..."
+                          : post.aiSummary
+                          ? "Refresh"
+                          : "Generate"}
+                      </span>
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-300">
+                    {post.aiSummary ||
+                      "No AI summary available. Click 'Generate' to create one."}
                   </p>
-                  <p className="text-sm text-gray-300">{post.aiSummary}</p>
                 </div>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Post Actions */}
           <div className="flex items-center space-x-6 pt-4 border-t border-gray-600">

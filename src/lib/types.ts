@@ -18,7 +18,7 @@ export interface Post {
   createdAt: string;
   author: User;
   comments: Comment[];
-  aiSummary: null;
+  aiSummary: string | null;
 }
 
 export interface Comment {
