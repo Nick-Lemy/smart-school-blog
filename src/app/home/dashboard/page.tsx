@@ -39,7 +39,12 @@ import {
   LogOut,
 } from "lucide-react";
 
+import { useAuth } from "@/contexts/AuthContext";
+// import api from "@/lib/utils";
+
 export default function DashboardPage() {
+  const { currentUser, logout } = useAuth();
+  // Replace with actual user fetching logic
   const [activeTab, setActiveTab] = useState("my-posts");
   const [newPost, setNewPost] = useState({
     title: "",
@@ -158,6 +163,7 @@ export default function DashboardPage() {
               <h1 className="text-xl font-bold text-green-600">Dashboard</h1>
             </div>
             <Button
+              onClick={logout}
               variant="ghost"
               size="sm"
               className="text-white hover:text-green-500"
@@ -171,7 +177,10 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex justify-between">
           <h1 className="text-xl font-medium text-white">
-            Hello, <span className="text-green-600 font-bold">John Doe!</span>
+            Hello,{" "}
+            <span className="text-green-600 font-bold">
+              {currentUser?.name}!
+            </span>
           </h1>
           <Avatar className="w-8 h-8">
             <AvatarImage src="/placeholder.svg?height=80&width=80" />

@@ -1,13 +1,32 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { BookOpen, CalendarDays, Home } from "lucide-react";
+import { BookOpen, CalendarDays, Home, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 export default function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace("/auth/login");
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-700">
+        <Loader2 className="animate-spin text-white w-10 h-10" />
+      </div>
+    ); // or spinner
+
+  if (!isAuthenticated) return null;
   return (
     <>
       <div className="pb-12">{children}</div>
