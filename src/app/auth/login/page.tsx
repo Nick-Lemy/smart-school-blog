@@ -57,9 +57,7 @@ export default function LoginPage() {
           </div>
         </div>
         {error && (
-          <div className="text-red-500 text-sm text-center">
-            {error ? error : "An error occurred. Please try again."}
-          </div>
+          <div className="text-red-500 text-sm text-center">{error}</div>
         )}
 
         <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
