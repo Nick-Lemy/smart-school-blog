@@ -180,7 +180,7 @@ export default function DashboardPage() {
             </AvatarFallback>
           </Avatar>
         </div>
-        <div className="grid lg:grid-cols-4 gap-8">
+        <div className="grid gap-8">
           <div className="grid grid-cols-2 gap-4 pt-5 text-center">
             <Card className="bg-gray-800 border-gray-600 text-white">
               <div className="text-2xl font-bold text-white">12</div>
@@ -192,37 +192,7 @@ export default function DashboardPage() {
             </Card>
           </div>
           {/* Sidebar */}
-          <div className="lg:col-span-1">
-            {/* <Card className="mb-6 bg-gray-800 border-gray-600 text-white">
-              <CardHeader className="text-center items-center flex flex-col pb-4">
-                <Avatar className="w-20 h-20 mx-auto mb-4">
-                  <AvatarImage src="/placeholder.svg?height=80&width=80" />
-                  <AvatarFallback className="text-lg bg-gray-700 text-white">
-                    JD
-                  </AvatarFallback>
-                </Avatar>
-                <CardTitle className="text-white">John Doe</CardTitle>
-                <Badge
-                  variant="secondary"
-                  className="mt-2 bg-gray-700 text-white"
-                >
-                  Student
-                </Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-white">12</div>
-                    <div className="text-xs text-gray-400">Posts Published</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-white">5</div>
-                    <div className="text-xs text-gray-400">Events Created</div>
-                  </div>
-                </div> 
-              </CardContent>
-            </Card> */}
-
+          <div className="">
             <Card className="bg-gray-800 border-gray-600 text-white">
               <CardHeader>
                 <CardTitle className="text-lg text-white">
@@ -396,7 +366,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-3">
+          <div className="">
             <Tabs
               value={activeTab}
               onValueChange={setActiveTab}

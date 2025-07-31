@@ -165,7 +165,7 @@ export default function EventsPage() {
                   {filteredEvents.map((event) => (
                     <Card
                       key={event.id}
-                      className="bg-gray-800 border border-gray-600 shadow-sm"
+                      className="bg-gray-800 justify-between border border-gray-600 shadow-sm"
                     >
                       <CardHeader>
                         <div className="flex items-start justify-between">
@@ -179,7 +179,7 @@ export default function EventsPage() {
                                 className="w-full h-48 md:h-full object-cover rounded-md"
                               />
                             </div>
-                            <CardTitle className="text-lg cursor-pointer text-green-500 hover:text-green-400 transition-colors">
+                            <CardTitle className="text-lg cursor-pointer text-green-500 hover:text-green-700 transition-colors">
                               {event.title}
                             </CardTitle>
                           </div>
@@ -230,7 +230,7 @@ export default function EventsPage() {
                           </div>
                         </div>
 
-                        <Button className="w-full bg-green-600 hover:bg-green-700 text-black font-semibold">
+                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold">
                           <Ticket className="w-4 h-4 mr-2" />
                           Register Now
                         </Button>
