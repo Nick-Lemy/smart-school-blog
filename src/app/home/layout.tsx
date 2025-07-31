@@ -17,7 +17,7 @@ export default function HomeLayout({
     if (!isLoading && !isAuthenticated) {
       router.replace("/auth/login");
     }
-  }, [isAuthenticated, isLoading]);
+  }, [isAuthenticated, isLoading, router]);
 
   if (isLoading)
     return (
