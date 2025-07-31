@@ -131,14 +131,14 @@ export default function EventsPage() {
                         key={event.id}
                         className="bg-gray-800 justify-between border border-gray-600 shadow-sm"
                       >
-                        <CardHeader className="flex-1/2">
+                        <CardHeader className="flex-1/2 w-full">
                           <div className="flex items-start">
-                            <div className="space-y-2">
-                              <div className="w-full h-32 md:h-40 overflow-hidden flex items-center justify-center">
+                            <div className="space-y-2 w-full">
+                              <div className="w-full overflow-hidden flex items-center justify-center">
                                 <Image
                                   src={event.coverImage}
                                   alt={event.title + " Image"}
-                                  className="w-full h-full object-cover rounded-md"
+                                  className="w-full h-full object-contain rounded-md"
                                   width={400}
                                   height={160}
                                   style={{ objectFit: "cover" }}
