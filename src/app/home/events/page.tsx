@@ -132,7 +132,7 @@ export default function EventsPage() {
   const filteredEvents = allEvents;
 
   return (
-    <div className="min-h-screen ">
+    <main className="min-h-screen ">
       {/* Header */}
       <header className="bg-gray-800 white sticky -top-0.25 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -243,6 +243,6 @@ export default function EventsPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

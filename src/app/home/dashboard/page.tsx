@@ -149,7 +149,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-700">
+    <main className="min-h-screen bg-gray-700">
       {/* Header with dark theme */}
       <header className="bg-gray-800 sticky -top-0.25 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -681,6 +681,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

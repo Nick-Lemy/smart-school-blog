@@ -43,7 +43,7 @@ export default function BlogPage() {
   ];
 
   return (
-    <div className="min-h-screen ">
+    <main className="min-h-screen ">
       {/* Header with gradient */}
       <header className="bg-gray-800 white sticky -top-0.25 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,6 +118,6 @@ export default function BlogPage() {
           ))}
         </div>
       </div>
-    </div>
+    </main>
   );
 }
