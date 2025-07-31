@@ -460,7 +460,9 @@ function AdminDashboardContent() {
                             <p className="font-medium text-white text-lg">
                               {user.name}
                             </p>
-                            <p className="text-sm text-gray-400">{user.email}</p>
+                            <p className="text-sm text-gray-400">
+                              {user.email}
+                            </p>
                             <div className="flex items-center space-x-4 mt-1">
                               <span className="text-xs text-gray-500">
                                 Role: {user.role}
@@ -497,8 +499,9 @@ function AdminDashboardContent() {
                                 Delete User
                               </AlertDialogTitle>
                               <AlertDialogDescription className="text-gray-400">
-                                Are you sure you want to delete &quot;{user.name}&quot;? 
-                                This action cannot be undone and will remove all their posts and comments.
+                                Are you sure you want to delete &quot;
+                                {user.name}&quot;? This action cannot be undone
+                                and will remove all their posts and comments.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -522,7 +525,8 @@ function AdminDashboardContent() {
                         <span className="flex items-center space-x-1">
                           <Clock className="w-4 h-4" />
                           <span>
-                            Joined {formatDistanceToNow(new Date(user.createdAt), {
+                            Joined{" "}
+                            {formatDistanceToNow(new Date(user.createdAt), {
                               addSuffix: true,
                             })}
                           </span>
