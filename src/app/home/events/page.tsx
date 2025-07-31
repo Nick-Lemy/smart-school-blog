@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,124 +12,84 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { Calendar, MapPin, Users, Clock, Search, Ticket } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Users,
+  Clock,
+  Search,
+  Ticket,
+  Loader2,
+} from "lucide-react";
 import Image from "next/image";
+import { Event, User } from "@/lib/types";
+import api from "@/lib/utils";
+import { AxiosResponse } from "axios";
+import { formatDistanceToNow } from "date-fns";
 
 export default function EventsPage() {
-  // const [selectedCategory] = useState("career");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [events, setEvents] = useState<Event[]>([]);
+  const [hosts, setHosts] = useState<{ [key: number]: User }>({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  const featuredEvents = [
-    {
-      id: 1,
-      title: "African Leadership Summit 2025",
-      description:
-        "Join leaders from across Africa to discuss the future of education, technology, and sustainable development.",
-      date: "March 15, 2025",
-      time: "9:00 AM - 5:00 PM",
-      location: "Kigali Convention Centre, Rwanda",
-      organizer: "African Leadership University",
-      organizerAvatar: "/placeholder.svg?height=40&width=40",
-      attendees: 1250,
-      maxAttendees: 1500,
-      category: "academic",
-      price: "Free",
-      image: "/placeholder.svg?height=200&width=400",
-      tags: ["Leadership", "Networking", "Innovation"],
-      featured: true,
-    },
-    {
-      id: 2,
-      title: "Inter-University Debate Championship",
-      description:
-        "The biggest debate competition bringing together the brightest minds from universities across Africa.",
-      date: "March 22, 2025",
-      time: "2:00 PM - 8:00 PM",
-      location: "University of Cape Town, South Africa",
-      organizer: "Pan-African Debate Society",
-      organizerAvatar: "/placeholder.svg?height=40&width=40",
-      attendees: 180,
-      maxAttendees: 300,
-      category: "academic",
-      price: "Free",
-      image: "/placeholder.svg?height=200&width=400",
-      tags: ["Debate", "Competition", "Public Speaking"],
-      featured: true,
-    },
-    {
-      id: 3,
-      title: "Cultural Night: Celebrating African Heritage",
-      description:
-        "An evening of music, dance, food, and storytelling celebrating the rich cultural diversity of Africa.",
-      date: "March 28, 2025",
-      time: "6:00 PM - 11:00 PM",
-      location: "Makerere University, Uganda",
-      organizer: "Cultural Affairs Committee",
-      organizerAvatar: "/placeholder.svg?height=40&width=40",
-      attendees: 320,
-      maxAttendees: 500,
-      category: "cultural",
-      price: "Free",
-      image: "/placeholder.svg?height=200&width=400",
-      tags: ["Culture", "Music", "Dance", "Food"],
-      featured: true,
-    },
-  ];
+  const fetchEvents = async () => {
+    try {
+      const response: AxiosResponse<Event[]> = await api.get("/event/");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      return [];
+    }
+  };
 
-  const upcomingEvents = [
-    {
-      id: 4,
-      title: "Tech Innovation Workshop",
-      description:
-        "Learn about the latest technologies shaping Africa's digital future.",
-      date: "April 5, 2025",
-      time: "10:00 AM - 4:00 PM",
-      location: "University of Lagos, Nigeria",
-      organizer: "Tech Society",
-      organizerAvatar: "/placeholder.svg?height=40&width=40",
-      attendees: 85,
-      maxAttendees: 100,
-      category: "academic",
-      price: "Free",
-      tags: ["Technology", "Innovation", "Workshop"],
-    },
-    {
-      id: 5,
-      title: "Football Tournament Finals",
-      description: "The ultimate showdown between the top university teams.",
-      date: "April 12, 2025",
-      time: "3:00 PM - 6:00 PM",
-      location: "National Stadium, Ghana",
-      organizer: "University Sports League",
-      organizerAvatar: "/placeholder.svg?height=40&width=40",
-      attendees: 2500,
-      maxAttendees: 5000,
-      category: "sports",
-      price: "$5",
-      tags: ["Football", "Sports", "Competition"],
-    },
-    {
-      id: 6,
-      title: "Career Fair 2025",
-      description:
-        "Connect with top employers and explore career opportunities across Africa.",
-      date: "April 18, 2025",
-      time: "9:00 AM - 5:00 PM",
-      location: "Cairo University, Egypt",
-      organizer: "Career Services",
-      organizerAvatar: "/placeholder.svg?height=40&width=40",
-      attendees: 450,
-      maxAttendees: 800,
-      category: "career",
-      price: "Free",
-      tags: ["Career", "Jobs", "Networking"],
-    },
-  ];
+  const fetchHost = async (hostId: number): Promise<User | null> => {
+    try {
+      const response: AxiosResponse<User> = await api.get(`/users/${hostId}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching host ${hostId}:`, error);
+      return null;
+    }
+  };
 
-  const allEvents = [...featuredEvents, ...upcomingEvents];
+  const filteredEvents = events.filter(
+    (event) =>
+      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (hosts[event.hostId]?.name || "")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+  );
 
-  const filteredEvents = allEvents;
+  // Fetch events and their hosts on mount
+  useEffect(() => {
+    const loadEventsAndHosts = async () => {
+      setIsLoading(true);
+      const eventsData = await fetchEvents();
+      setEvents(eventsData);
+
+      // Fetch all unique hosts
+      const uniqueHostIds = [
+        ...new Set(eventsData.map((event) => event.hostId)),
+      ];
+      const hostPromises = uniqueHostIds.map((hostId) => fetchHost(hostId));
+      const hostResults = await Promise.all(hostPromises);
+
+      // Create hosts map
+      const hostsMap: { [key: number]: User } = {};
+      uniqueHostIds.forEach((hostId, index) => {
+        if (hostResults[index]) {
+          hostsMap[hostId] = hostResults[index]!;
+        }
+      });
+
+      setHosts(hostsMap);
+      setIsLoading(false);
+    };
+    loadEventsAndHosts();
+  }, []);
 
   return (
     <main className="min-h-screen ">
@@ -152,7 +112,10 @@ export default function EventsPage() {
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
-                placeholder="Search posts..."
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search events..."
                 className="pl-10 w-full bg-gray-100 border-0"
               />
             </div>
@@ -162,81 +125,102 @@ export default function EventsPage() {
             <Tabs defaultValue="featured" className="w-full">
               <TabsContent value="featured" className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
-                  {filteredEvents.map((event) => (
-                    <Card
-                      key={event.id}
-                      className="bg-gray-800 justify-between border border-gray-600 shadow-sm"
-                    >
-                      <CardHeader className="flex-1/2">
-                        <div className="flex items-start">
-                          <div className="space-y-2">
-                            <div className="md:w-1/2">
-                              <Image
-                                width={50}
-                                height={50}
-                                src={"/placeholder.svg"}
-                                alt={event.title + " Image"}
-                                className="w-full h-48 md:h-full object-cover rounded-md"
-                              />
+                  {filteredEvents.length > 0 ? (
+                    filteredEvents.map((event) => (
+                      <Card
+                        key={event.id}
+                        className="bg-gray-800 justify-between border border-gray-600 shadow-sm"
+                      >
+                        <CardHeader className="flex-1/2">
+                          <div className="flex items-start">
+                            <div className="space-y-2">
+                              <div className="w-full h-32 md:h-40 overflow-hidden flex items-center justify-center">
+                                <Image
+                                  src={event.coverImage}
+                                  alt={event.title + " Image"}
+                                  className="w-full h-full object-cover rounded-md"
+                                  width={400}
+                                  height={160}
+                                  style={{ objectFit: "cover" }}
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </CardHeader>
+                        </CardHeader>
 
-                      <CardContent className="space-y-4">
-                        <CardTitle className="text-lg cursor-pointer text-green-500 hover:text-green-700 transition-colors">
-                          {event.title}
-                        </CardTitle>
-                        <CardDescription className="line-clamp-2 text-white">
-                          {event.description}
-                        </CardDescription>
-                        <div className="space-y-2 text-sm text-gray-200">
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="w-4 h-4 text-green-400" />
-                            <span>{event.date}</span>
+                        <CardContent className="space-y-4">
+                          <CardTitle className="text-lg cursor-pointer text-green-500 hover:text-green-700 transition-colors">
+                            {event.title}
+                          </CardTitle>
+                          <CardDescription className="line-clamp-2 text-white">
+                            {event.description}
+                          </CardDescription>
+                          <div className="space-y-2 text-sm text-gray-200">
+                            <div className="flex items-center space-x-2">
+                              <Calendar className="w-4 h-4 text-green-400" />
+                              <span>
+                                {new Date(event.startDate).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Clock className="w-4 h-4 text-green-400" />
+                              <span>
+                                {new Date(event.endDate).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <MapPin className="w-4 h-4 text-green-400" />
+                              <span>{event.location}</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Users className="w-4 h-4 text-green-400" />
+                              <span>{event.attendees.length} attendees</span>
+                            </div>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <Clock className="w-4 h-4 text-green-400" />
-                            <span>{event.time}</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <MapPin className="w-4 h-4 text-green-400" />
-                            <span>{event.location}</span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Users className="w-4 h-4 text-green-400" />
-                            <span>{event.attendees} attendees</span>
-                          </div>
-                        </div>
 
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <Avatar className="w-6 h-6">
-                              <AvatarImage
-                                src={
-                                  event.organizerAvatar || "/placeholder.svg"
-                                }
-                              />
-                              <AvatarFallback className="text-xs bg-gray-700 text-white">
-                                {event.organizer
-                                  .split(" ")
-                                  .map((n) => n[0])
-                                  .join("")}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm text-gray-400">
-                              {event.organizer}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <Avatar className="w-6 h-6">
+                                <AvatarImage src="/placeholder.svg" />
+                                <AvatarFallback className="text-xs bg-gray-700 text-white">
+                                  {hosts[event.hostId]?.name
+                                    ? hosts[event.hostId].name
+                                        .split(" ")
+                                        .map((n) => n[0])
+                                        .join("")
+                                    : "?"}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="text-sm text-gray-400">
+                                {hosts[event.hostId]?.name || "Loading..."}
+                              </span>
+                            </div>
+                            <span className="text-sm text-gray-500">
+                              {formatDistanceToNow(new Date(event.createdAt), {
+                                addSuffix: true,
+                              })}
                             </span>
                           </div>
-                        </div>
 
-                        <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold">
-                          <Ticket className="w-4 h-4 mr-2" />
-                          Register Now
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  ))}
+                          <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold">
+                            <Ticket className="w-4 h-4 mr-2" />
+                            Register Now
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : isLoading ? (
+                    <div className="col-span-2 flex items-center justify-center py-8">
+                      <p className="text-white font-medium">
+                        <Loader2 className="animate-spin mr-2 inline-block w-4 h-4" />
+                        <span>Loading Events...</span>
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="col-span-2 flex items-center justify-center py-8">
+                      <p className="text-white font-medium">No events found.</p>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
             </Tabs>

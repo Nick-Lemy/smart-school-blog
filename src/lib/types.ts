@@ -28,3 +28,17 @@ export interface Comment {
   createdAt: string;
   author: User;
 }
+
+export interface Event {
+  id: number;
+  title: string;
+  category: string;
+  description: string;
+  startDate: string;
+  coverImage: string;
+  location: string;
+  endDate: string;
+  attendees: number[];
+  hostId: number;
+  createdAt: string;
+}
