@@ -23,8 +23,10 @@ import { AxiosResponse } from "axios";
 import { Sparkles, Search, Loader2, Plus } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function BlogPage() {
+  const router = useRouter();
   const [feedPosts, setFeedPosts] = useState<Post[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -182,7 +184,10 @@ export default function BlogPage() {
                 className="border rounded-lg border-gray-800/50 shadow-0"
               >
                 <CardHeader>
-                  <CardTitle className="text-xl cursor-pointer text-green-600 transition-colors">
+                  <CardTitle
+                    className="text-xl cursor-pointer text-green-600 transition-colors hover:text-green-500"
+                    onClick={() => router.push(`/home/blog/${post.id}`)}
+                  >
                     {post.title}
                   </CardTitle>
                   <CardDescription className="text-white font-normal">

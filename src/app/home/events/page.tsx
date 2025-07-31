@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -45,6 +46,7 @@ import { AxiosResponse } from "axios";
 import { formatDistanceToNow } from "date-fns";
 
 export default function EventsPage() {
+  const router = useRouter();
   const [events, setEvents] = useState<Event[]>([]);
   const [hosts, setHosts] = useState<{ [key: number]: User }>({});
   const [searchQuery, setSearchQuery] = useState("");
@@ -354,7 +356,12 @@ export default function EventsPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4">
-                          <CardTitle className="text-lg cursor-pointer text-green-500 hover:text-green-700 transition-colors">
+                          <CardTitle
+                            className="text-lg cursor-pointer text-green-500 hover:text-green-700 transition-colors"
+                            onClick={() =>
+                              router.push(`/home/events/${event.id}`)
+                            }
+                          >
                             {event.title}
                           </CardTitle>
                           <CardDescription className="line-clamp-2 text-white">
