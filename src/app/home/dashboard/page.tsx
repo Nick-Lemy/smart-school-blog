@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -40,18 +40,17 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
-import api from "@/lib/utils";
-import { redirect, useRouter } from "next/navigation";
+// import api from "@/lib/utils";
 
 export default function DashboardPage() {
-  const { isAuthenticated, currentUser, logout } = useAuth();
+  const { currentUser, logout } = useAuth();
+  // Replace with actual user fetching logic
   const [activeTab, setActiveTab] = useState("my-posts");
   const [newPost, setNewPost] = useState({
     title: "",
     content: "",
     category: "",
   });
-  const router = useRouter();
   const [newEvent, setNewEvent] = useState({
     title: "",
     description: "",

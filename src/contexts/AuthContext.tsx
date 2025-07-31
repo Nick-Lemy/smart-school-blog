@@ -16,35 +16,37 @@ type AuthContextType = {
   login: (token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  isLoading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true); // <== ADD THIS
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-
-  const getUser = async () => {
-    if (token) {
-      try {
-        const response = await api.get("/users/me");
-        setCurrentUser(response.data);
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-      }
-    }
-  };
 
   useEffect(() => {
     const stored = localStorage.getItem("token");
     if (stored) {
       setToken(stored);
       api.defaults.headers.common["Authorization"] = `Bearer ${stored}`;
+      api
+        .get("/users/me")
+        .then((response) => {
+          setCurrentUser(response.data);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch user:", error);
+          setCurrentUser(null);
+        })
+        .finally(() => {
+          setIsLoading(false); // <== DONE LOADING
+        });
+    } else {
+      setIsLoading(false); // <== DONE LOADING (even if no token)
     }
   }, []);
-  useEffect(() => {
-    getUser();
-  }, [token]);
 
   const login = (newToken: string) => {
     localStorage.setItem("token", newToken);
@@ -65,7 +67,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         token,
         login,
         logout,
-        isAuthenticated: token ? true : false,
+        isAuthenticated: !!token,
+        isLoading,
       }}
     >
       {children}

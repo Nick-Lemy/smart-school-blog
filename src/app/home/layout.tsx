@@ -2,7 +2,7 @@
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { BookOpen, CalendarDays, Home } from "lucide-react";
+import { BookOpen, CalendarDays, Home, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 export default function HomeLayout({
@@ -10,24 +10,21 @@ export default function HomeLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoading && !isAuthenticated) {
       router.replace("/auth/login");
-      return;
     }
+  }, [isAuthenticated, isLoading]);
 
-    // Call protected API
-    // api
-    //   .get("/api/me")
-    //   .then((res) => console.log(res.data))
-    //   .catch(() => {
-    //     logout(); // invalid token
-    //     router.replace("/login");
-    //   });
-  }, [isAuthenticated]);
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-700">
+        <Loader2 className="animate-spin text-white w-10 h-10" />
+      </div>
+    ); // or spinner
 
   if (!isAuthenticated) return null;
   return (
