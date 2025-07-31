@@ -57,13 +57,13 @@ export default function BlogPage() {
         content: newPost.content,
       });
 
-      setFeedPosts((prev) => [response.data, ...prev]);
+      router.push("/home/blog/" + response.data.id);
+      // setFeedPosts((prev) => [response.data, ...prev]);
       setNewPost({ title: "", content: "" });
       setPostDialogOpen(false);
     } catch (error) {
       console.error("Error creating post:", error);
     } finally {
-      window.location.reload();
       setIsCreatingPost(false);
     }
   };

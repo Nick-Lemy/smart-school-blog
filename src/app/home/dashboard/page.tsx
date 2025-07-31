@@ -58,6 +58,8 @@ export default function DashboardPage() {
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
   const [postDialogOpen, setPostDialogOpen] = useState(false);
   const [eventDialogOpen, setEventDialogOpen] = useState(false);
+  const [postError, setPostError] = useState<string | null>(null);
+  const [eventError, setEventError] = useState<string | null>(null);
 
   const [newPost, setNewPost] = useState({
     title: "",
@@ -112,20 +114,42 @@ export default function DashboardPage() {
   }, [currentUser]);
 
   const handleCreatePost = async () => {
-    if (!newPost.title || !newPost.content) return;
+    if (!newPost.title || !newPost.content) {
+      setPostError("Please fill in both title and content");
+      return;
+    }
 
     setIsCreatingPost(true);
+    setPostError(null);
+
     try {
       const response: AxiosResponse<Post> = await api.post("/posts", {
         title: newPost.title,
         content: newPost.content,
       });
 
-      setUserPosts((prev) => [response.data, ...prev]);
+      router.push("/home/blog/" + response.data.id);
       setNewPost({ title: "", content: "" });
       setPostDialogOpen(false);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error creating post:", error);
+
+      // Extract error message from API response or use a default message
+      let errorMessage = "Failed to create post. Please try again.";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "object" && error !== null) {
+        const apiError = error as {
+          response?: { data?: { message?: string; error?: string } };
+        };
+        errorMessage =
+          apiError.response?.data?.message ||
+          apiError.response?.data?.error ||
+          errorMessage;
+      }
+
+      setPostError(errorMessage);
     } finally {
       setIsCreatingPost(false);
     }
@@ -137,10 +161,16 @@ export default function DashboardPage() {
       !newEvent.description ||
       !newEvent.startDate ||
       !newEvent.endDate
-    )
+    ) {
+      setEventError(
+        "Please fill in all required fields (title, description, start date, end date)"
+      );
       return;
+    }
 
     setIsCreatingEvent(true);
+    setEventError(null);
+
     try {
       // Convert datetime-local format to ISO-8601 format
       const startDateISO = new Date(newEvent.startDate).toISOString();
@@ -167,8 +197,25 @@ export default function DashboardPage() {
         endDate: "",
       });
       setEventDialogOpen(false);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error creating event:", error);
+
+      // Extract error message from API response or use a default message
+      let errorMessage = "Failed to create event. Please try again.";
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "object" && error !== null) {
+        const apiError = error as {
+          response?: { data?: { message?: string; error?: string } };
+        };
+        errorMessage =
+          apiError.response?.data?.message ||
+          apiError.response?.data?.error ||
+          errorMessage;
+      }
+
+      setEventError(errorMessage);
     } finally {
       setIsCreatingEvent(false);
     }
@@ -252,7 +299,13 @@ export default function DashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Dialog open={postDialogOpen} onOpenChange={setPostDialogOpen}>
+                <Dialog
+                  open={postDialogOpen}
+                  onOpenChange={(open) => {
+                    setPostDialogOpen(open);
+                    if (open) setPostError(null); // Clear error when opening dialog
+                  }}
+                >
                   <DialogTrigger asChild>
                     <Button className="w-full bg-green-600 text-black font-semibold hover:bg-green-700">
                       <Plus className="mr-2 h-4 w-4" />
@@ -287,6 +340,11 @@ export default function DashboardPage() {
                         }
                         className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
                       />
+                      {postError && (
+                        <div className="bg-red-500/10 border border-red-500 text-red-400 px-4 py-3 rounded">
+                          {postError}
+                        </div>
+                      )}
                       <div className="flex justify-end space-x-2">
                         <Button
                           variant="outline"
@@ -318,7 +376,10 @@ export default function DashboardPage() {
 
                 <Dialog
                   open={eventDialogOpen}
-                  onOpenChange={setEventDialogOpen}
+                  onOpenChange={(open) => {
+                    setEventDialogOpen(open);
+                    if (open) setEventError(null); // Clear error when opening dialog
+                  }}
                 >
                   <DialogTrigger asChild>
                     <Button
@@ -430,6 +491,11 @@ export default function DashboardPage() {
                         }
                         className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
                       />
+                      {eventError && (
+                        <div className="bg-red-500/10 border border-red-500 text-red-400 px-4 py-3 rounded">
+                          {eventError}
+                        </div>
+                      )}
                       <div className="flex justify-end space-x-2">
                         <Button
                           variant="outline"
