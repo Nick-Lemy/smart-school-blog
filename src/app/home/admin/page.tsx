@@ -38,7 +38,7 @@ import {
 
 import AdminProtectedRoute from "@/components/AdminProtectedRoute";
 import api from "@/lib/utils";
-import { Post, Event, Comment, User } from "@/lib/types";
+import { Post, Event, User } from "@/lib/types";
 import { AxiosResponse } from "axios";
 import { formatDistanceToNow } from "date-fns";
 
@@ -46,10 +46,7 @@ function AdminDashboardContent() {
   const router = useRouter();
   const [posts, setPosts] = useState<Post[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [commentAuthors, setCommentAuthors] = useState<{ [key: number]: User }>(
-    {}
-  );
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("posts");
   const [deletingItem, setDeletingItem] = useState<number | null>(null);
@@ -66,31 +63,9 @@ function AdminDashboardContent() {
         const eventsResponse: AxiosResponse<Event[]> = await api.get("/event/");
         setEvents(eventsResponse.data);
 
-        // Fetch all comments
-        const commentsResponse: AxiosResponse<Comment[]> = await api.get(
-          "/comments"
-        );
-        setComments(commentsResponse.data);
-
-        // Fetch comment authors
-        const uniqueAuthorIds = [
-          ...new Set(commentsResponse.data.map((comment) => comment.authorId)),
-        ];
-        const authorPromises = uniqueAuthorIds.map((authorId) =>
-          api.get(`/users/${authorId}`).catch((error) => {
-            console.error(`Error fetching author ${authorId}:`, error);
-            return null;
-          })
-        );
-        const authorResults = await Promise.all(authorPromises);
-
-        const authorsMap: { [key: number]: User } = {};
-        uniqueAuthorIds.forEach((authorId, index) => {
-          if (authorResults[index]?.data) {
-            authorsMap[authorId] = authorResults[index].data;
-          }
-        });
-        setCommentAuthors(authorsMap);
+        // Fetch all users
+        const usersResponse: AxiosResponse<User[]> = await api.get("/users");
+        setUsers(usersResponse.data);
       } catch (error) {
         console.error("Error fetching admin data:", error);
       } finally {
@@ -125,13 +100,13 @@ function AdminDashboardContent() {
     }
   };
 
-  const handleDeleteComment = async (commentId: number) => {
-    setDeletingItem(commentId);
+  const handleDeleteUser = async (userId: number) => {
+    setDeletingItem(userId);
     try {
-      await api.delete(`/comments/${commentId}`);
-      setComments((prev) => prev.filter((comment) => comment.id !== commentId));
+      await api.delete(`/users/${userId}`);
+      setUsers((prev) => prev.filter((user) => user.id !== userId));
     } catch (error) {
-      console.error("Error deleting comment:", error);
+      console.error("Error deleting user:", error);
     } finally {
       setDeletingItem(null);
     }
@@ -201,12 +176,12 @@ function AdminDashboardContent() {
           <Card className="bg-gray-800 border-gray-600 text-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-gray-400">
-                Total Comments
+                Total Users
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-500">
-                {comments.length}
+                {users.length}
               </div>
             </CardContent>
           </Card>
@@ -228,10 +203,10 @@ function AdminDashboardContent() {
               Events ({events.length})
             </TabsTrigger>
             <TabsTrigger
-              value="comments"
+              value="users"
               className="text-white data-[state=active]:bg-green-600 data-[state=active]:text-black font-semibold"
             >
-              Comments ({comments.length})
+              Users ({users.length})
             </TabsTrigger>
           </TabsList>
 
@@ -452,111 +427,113 @@ function AdminDashboardContent() {
             </div>
           </TabsContent>
 
-          {/* Comments Tab */}
-          <TabsContent value="comments" className="space-y-6 mt-6">
+          {/* Users Tab */}
+          <TabsContent value="users" className="space-y-6 mt-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-white">Manage Comments</h2>
+              <h2 className="text-2xl font-bold text-white">Manage Users</h2>
             </div>
             <div className="space-y-4">
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="animate-spin mr-2 w-4 h-4" />
-                  <span className="text-white">Loading comments...</span>
+                  <span className="text-white">Loading users...</span>
                 </div>
-              ) : comments.length > 0 ? (
-                comments.map((comment) => {
-                  const author = commentAuthors[comment.authorId];
-                  return (
-                    <Card
-                      key={comment.id}
-                      className="bg-gray-800 border-gray-600 text-white"
-                    >
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3 flex-1">
-                            <Avatar className="w-10 h-10">
-                              <AvatarImage src="/placeholder.svg" />
-                              <AvatarFallback className="bg-gray-700 text-white text-sm">
-                                {author?.name
-                                  ? author.name
-                                      .split(" ")
-                                      .map((n) => n[0])
-                                      .join("")
-                                  : "?"}
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                              <p className="font-medium text-white">
-                                {author?.name || "Unknown User"}
-                              </p>
-                              <p className="text-sm text-gray-400">
-                                Post ID: {comment.postId}
-                              </p>
+              ) : users.length > 0 ? (
+                users.map((user) => (
+                  <Card
+                    key={user.id}
+                    className="bg-gray-800 border-gray-600 text-white"
+                  >
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 flex-1">
+                          <Avatar className="w-12 h-12">
+                            <AvatarImage src="/placeholder.svg" />
+                            <AvatarFallback className="bg-gray-700 text-white">
+                              {user.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <p className="font-medium text-white text-lg">
+                              {user.name}
+                            </p>
+                            <p className="text-sm text-gray-400">{user.email}</p>
+                            <div className="flex items-center space-x-4 mt-1">
+                              <span className="text-xs text-gray-500">
+                                Role: {user.role}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                Language: {user.languagePreference}
+                              </span>
+                              {user.isVerified && (
+                                <span className="text-xs text-green-500 font-medium">
+                                  ✓ Verified
+                                </span>
+                              )}
                             </div>
                           </div>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-500 hover:text-red-700 hover:bg-red-500/10"
-                                disabled={deletingItem === comment.id}
-                              >
-                                {deletingItem === comment.id ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <Trash2 className="w-4 h-4" />
-                                )}
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="bg-gray-800 border-gray-600">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle className="text-white">
-                                  Delete Comment
-                                </AlertDialogTitle>
-                                <AlertDialogDescription className="text-gray-400">
-                                  Are you sure you want to delete this comment?
-                                  This action cannot be undone.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel className="text-white border-gray-600 hover:bg-gray-700">
-                                  Cancel
-                                </AlertDialogCancel>
-                                <AlertDialogAction
-                                  className="bg-red-600 text-white hover:bg-red-700"
-                                  onClick={() =>
-                                    handleDeleteComment(comment.id)
-                                  }
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
                         </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-gray-300 mb-3">{comment.content}</p>
-                        <div className="flex items-center justify-between text-sm text-gray-400">
-                          <span>Author ID: {comment.authorId}</span>
-                          <span className="flex items-center space-x-1">
-                            <Clock className="w-4 h-4" />
-                            <span>
-                              {formatDistanceToNow(
-                                new Date(comment.createdAt),
-                                { addSuffix: true }
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-500 hover:text-red-700 hover:bg-red-500/10"
+                              disabled={deletingItem === user.id}
+                            >
+                              {deletingItem === user.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
                               )}
-                            </span>
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="bg-gray-800 border-gray-600">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle className="text-white">
+                                Delete User
+                              </AlertDialogTitle>
+                              <AlertDialogDescription className="text-gray-400">
+                                Are you sure you want to delete &quot;{user.name}&quot;? 
+                                This action cannot be undone and will remove all their posts and comments.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="text-white border-gray-600 hover:bg-gray-700">
+                                Cancel
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-red-600 text-white hover:bg-red-700"
+                                onClick={() => handleDeleteUser(user.id)}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center justify-between text-sm text-gray-400">
+                        <span>User ID: {user.id}</span>
+                        <span className="flex items-center space-x-1">
+                          <Clock className="w-4 h-4" />
+                          <span>
+                            Joined {formatDistanceToNow(new Date(user.createdAt), {
+                              addSuffix: true,
+                            })}
                           </span>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
               ) : (
                 <div className="text-center py-8">
-                  <p className="text-gray-400">No comments found.</p>
+                  <p className="text-gray-400">No users found.</p>
                 </div>
               )}
             </div>
