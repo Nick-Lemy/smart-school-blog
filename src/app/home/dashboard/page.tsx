@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -47,6 +48,7 @@ import { AxiosResponse } from "axios";
 import { formatDistanceToNow } from "date-fns";
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { currentUser, logout } = useAuth();
   const [activeTab, setActiveTab] = useState("my-posts");
   const [userPosts, setUserPosts] = useState<Post[]>([]);
@@ -516,7 +518,10 @@ export default function DashboardPage() {
                               </Button>
                             </div>
                           </div>
-                          <CardTitle className="text-lg text-green-500 hover:text-green-400 cursor-pointer">
+                          <CardTitle
+                            className="text-lg text-green-500 hover:text-green-400 cursor-pointer"
+                            onClick={() => router.push(`/home/blog/${post.id}`)}
+                          >
                             {post.title}
                           </CardTitle>
                           <CardDescription className="text-gray-400 line-clamp-2">
@@ -577,7 +582,12 @@ export default function DashboardPage() {
                         <CardHeader>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                              <CardTitle className="text-lg text-green-500 hover:text-green-400 cursor-pointer">
+                              <CardTitle
+                                className="text-lg text-green-500 hover:text-green-400 cursor-pointer"
+                                onClick={() =>
+                                  router.push(`/home/events/${event.id}`)
+                                }
+                              >
                                 {event.title}
                               </CardTitle>
                             </div>

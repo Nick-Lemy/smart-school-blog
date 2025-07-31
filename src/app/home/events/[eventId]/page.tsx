@@ -15,21 +15,28 @@ import {
   Loader2,
   User,
   Tag,
+  UserPlus,
+  Share,
 } from "lucide-react";
 import { Event, User as UserType } from "@/lib/types";
 import api from "@/lib/utils";
 import { AxiosResponse } from "axios";
 import { formatDistanceToNow, format } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import UserListModal from "@/components/UserListModal";
 
 export default function UniqueEventPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.eventId as string;
+  const { currentUser } = useAuth();
 
   const [event, setEvent] = useState<Event | null>(null);
   const [host, setHost] = useState<UserType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   useEffect(() => {
     const fetchEvent = async () => {
@@ -39,6 +46,11 @@ export default function UniqueEventPage() {
           `/event/${eventId}`
         );
         setEvent(response.data);
+
+        // Check if current user is registered
+        if (currentUser && response.data.attendees.includes(currentUser.id)) {
+          setIsRegistered(true);
+        }
 
         // Fetch host information
         if (response.data.hostId) {
@@ -58,7 +70,32 @@ export default function UniqueEventPage() {
     if (eventId) {
       fetchEvent();
     }
-  }, [eventId]);
+  }, [eventId, currentUser]);
+
+  const handleRegisterForEvent = async () => {
+    if (!event || !currentUser) return;
+
+    setIsRegistering(true);
+    try {
+      await api.post(`/event/register/${eventId}`);
+
+      // Update local state
+      setEvent((prev) =>
+        prev
+          ? {
+              ...prev,
+              attendees: [...prev.attendees, currentUser.id],
+            }
+          : null
+      );
+
+      setIsRegistered(true);
+    } catch (error) {
+      console.error("Error registering for event:", error);
+    } finally {
+      setIsRegistering(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -147,9 +184,15 @@ export default function UniqueEventPage() {
               <div className="text-right">
                 <div className="flex items-center space-x-2 text-gray-400">
                   <Users className="w-5 h-5" />
-                  <span className="text-lg font-semibold text-white">
-                    {event.attendees.length}
-                  </span>
+                  <UserListModal
+                    count={event.attendees.length}
+                    type="attendees"
+                    eventId={event.id.toString()}
+                  >
+                    <span className="text-lg font-semibold text-white hover:text-green-400 cursor-pointer transition-colors">
+                      {event.attendees.length}
+                    </span>
+                  </UserListModal>
                 </div>
                 <p className="text-sm text-gray-400">Attendees</p>
               </div>
@@ -247,14 +290,47 @@ export default function UniqueEventPage() {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-600">
-              <Button className="bg-green-600 text-black font-semibold hover:bg-green-700 flex-1">
-                <Users className="mr-2 h-4 w-4" />
-                Join Event
-              </Button>
+              {currentUser ? (
+                <Button
+                  onClick={handleRegisterForEvent}
+                  disabled={isRegistering || isRegistered}
+                  className={`${
+                    isRegistered
+                      ? "bg-gray-600 text-white"
+                      : "bg-green-600 text-black hover:bg-green-700"
+                  } font-semibold flex-1`}
+                >
+                  {isRegistering ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Registering...
+                    </>
+                  ) : isRegistered ? (
+                    <>
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      Registered
+                    </>
+                  ) : (
+                    <>
+                      <Users className="mr-2 h-4 w-4" />
+                      Join Event
+                    </>
+                  )}
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => router.push("/auth/login")}
+                  className="bg-green-600 text-black font-semibold hover:bg-green-700 flex-1"
+                >
+                  <Users className="mr-2 h-4 w-4" />
+                  Login to Join
+                </Button>
+              )}
               <Button
                 variant="outline"
                 className="text-white border-gray-600 hover:bg-gray-700 flex-1"
               >
+                <Share className="mr-2 h-4 w-4" />
                 Share Event
               </Button>
             </div>

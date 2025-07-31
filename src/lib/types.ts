@@ -26,7 +26,7 @@ export interface Comment {
   authorId: number;
   postId: number;
   createdAt: string;
-  author: User;
+  author?: User; // Make author optional since it's not returned by API
 }
 
 export interface Event {

@@ -15,31 +15,84 @@ import {
   Send,
   Calendar,
   User,
+  Trash2,
 } from "lucide-react";
-import { Post, Comment } from "@/lib/types";
+import { Post, Comment, User as UserType } from "@/lib/types";
 import api from "@/lib/utils";
 import { AxiosResponse } from "axios";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "@/contexts/AuthContext";
+import UserListModal from "@/components/UserListModal";
 
 export default function UniquePostPage() {
   const params = useParams();
   const router = useRouter();
   const postId = params.postId as string;
+  const { currentUser } = useAuth();
 
   const [post, setPost] = useState<Post | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [commentAuthors, setCommentAuthors] = useState<{
+    [key: number]: UserType;
+  }>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [newComment, setNewComment] = useState("");
   const [isAddingComment, setIsAddingComment] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
+  const [userHasLiked, setUserHasLiked] = useState(false);
 
   useEffect(() => {
-    const fetchPost = async () => {
+    const fetchData = async () => {
       try {
         setIsLoading(true);
-        const response: AxiosResponse<Post> = await api.get(`/posts/${postId}`);
-        setPost(response.data);
+
+        // Fetch post, comments, and current user in parallel
+        const promises = [
+          api.get(`/posts/${postId}`),
+          api.get(`/comment/post/${postId}`),
+        ];
+
+        // Only fetch user if there's a current user in context
+        if (currentUser) {
+          promises.push(api.get("/users/me"));
+        }
+
+        const responses = await Promise.all(promises);
+        const [postResponse, commentsResponse, userResponse] = responses;
+
+        setPost(postResponse.data);
+        setComments(commentsResponse.data);
+
+        // Check if current user has liked the post
+        if (userResponse && userResponse.data) {
+          const userId = userResponse.data.id;
+          setUserHasLiked(postResponse.data.likes.includes(userId));
+        }
+
+        // Fetch author information for each comment
+        const uniqueAuthorIds = [
+          ...new Set(
+            commentsResponse.data.map((comment: Comment) => comment.authorId)
+          ),
+        ] as number[];
+
+        if (uniqueAuthorIds.length > 0) {
+          const authorPromises = uniqueAuthorIds.map((authorId: number) =>
+            api.get(`/users/${authorId}`)
+          );
+
+          const authorResponses = await Promise.all(authorPromises);
+          const authorsMap: { [key: number]: UserType } = {};
+
+          authorResponses.forEach((response, index) => {
+            authorsMap[uniqueAuthorIds[index]] = response.data;
+          });
+
+          setCommentAuthors(authorsMap);
+        }
       } catch (error) {
-        console.error("Error fetching post:", error);
+        console.error("Error fetching post data:", error);
         setError("Failed to load post");
       } finally {
         setIsLoading(false);
@@ -47,30 +100,29 @@ export default function UniquePostPage() {
     };
 
     if (postId) {
-      fetchPost();
+      fetchData();
     }
-  }, [postId]);
+  }, [postId, currentUser]);
 
   const handleAddComment = async () => {
-    if (!newComment.trim() || !post) return;
+    if (!newComment.trim() || !post || !currentUser) return;
 
     setIsAddingComment(true);
     try {
-      const response: AxiosResponse<Comment> = await api.post(
-        `/posts/${postId}/comments`,
-        {
-          content: newComment.trim(),
-        }
-      );
+      const response: AxiosResponse<Comment> = await api.post("/comment", {
+        content: newComment.trim(),
+        postId: parseInt(postId),
+      });
 
-      setPost((prev) =>
-        prev
-          ? {
-              ...prev,
-              comments: [...prev.comments, response.data],
-            }
-          : null
-      );
+      setComments((prev) => [...prev, response.data]);
+
+      // Add current user to commentAuthors if not already there
+      if (!commentAuthors[currentUser.id]) {
+        setCommentAuthors((prev) => ({
+          ...prev,
+          [currentUser.id]: currentUser,
+        }));
+      }
 
       setNewComment("");
     } catch (error) {
@@ -81,21 +133,33 @@ export default function UniquePostPage() {
   };
 
   const handleLikePost = async () => {
-    if (!post) return;
+    if (!post || !currentUser) return;
 
+    setIsLiking(true);
     try {
-      await api.post(`/posts/${postId}/like`);
-      // Update likes in local state (assuming the API returns updated post or we refetch)
-      setPost((prev) =>
-        prev
-          ? {
-              ...prev,
-              likes: [...prev.likes, 1], // Simplified - in real app you'd handle user ID properly
-            }
-          : null
-      );
+      await api.post(`/posts/like/${postId}`);
+
+      // Refresh the post to get updated likes
+      const response: AxiosResponse<Post> = await api.get(`/posts/${postId}`);
+      setPost(response.data);
+
+      // Update the like status for current user
+      const userResponse = await api.get("/users/me");
+      const userId = userResponse.data.id;
+      setUserHasLiked(response.data.likes.includes(userId));
     } catch (error) {
       console.error("Error liking post:", error);
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      await api.delete(`/comment/${commentId}`);
+      setComments((prev) => prev.filter((comment) => comment.id !== commentId));
+    } catch (error) {
+      console.error("Error deleting comment:", error);
     }
   };
 
@@ -210,16 +274,37 @@ export default function UniquePostPage() {
 
             {/* Post Actions */}
             <div className="flex items-center space-x-6 pt-4 border-t border-gray-600">
-              <button
-                onClick={handleLikePost}
-                className="flex items-center space-x-2 text-gray-400 hover:text-red-500 transition-colors"
-              >
-                <Heart className="w-5 h-5" />
-                <span>{post.likes.length}</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handleLikePost}
+                  disabled={isLiking || !currentUser}
+                  className={`flex items-center space-x-2 transition-colors disabled:opacity-50 ${
+                    userHasLiked
+                      ? "text-red-500 hover:text-red-600"
+                      : "text-gray-400 hover:text-red-500"
+                  }`}
+                >
+                  {isLiking ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Heart
+                      className={`w-5 h-5 ${userHasLiked ? "fill-current" : ""}`}
+                    />
+                  )}
+                </button>
+                <UserListModal
+                  count={post.likes.length}
+                  type="likes"
+                  postId={post.id.toString()}
+                >
+                  <span className="text-gray-400 hover:text-red-400 cursor-pointer transition-colors">
+                    {post.likes.length}
+                  </span>
+                </UserListModal>
+              </div>
               <div className="flex items-center space-x-2 text-gray-400">
                 <MessageCircle className="w-5 h-5" />
-                <span>{post.comments.length}</span>
+                <span>{comments.length}</span>
               </div>
             </div>
           </CardContent>
@@ -229,70 +314,110 @@ export default function UniquePostPage() {
         <Card className="bg-gray-800 border-gray-600 text-white">
           <CardHeader>
             <CardTitle className="text-lg text-green-500">
-              Comments ({post.comments.length})
+              Comments ({comments.length})
             </CardTitle>
           </CardHeader>
 
           <CardContent>
             {/* Add Comment */}
-            <div className="mb-6">
-              <Textarea
-                placeholder="Write a comment..."
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500 mb-3"
-                rows={3}
-              />
-              <Button
-                onClick={handleAddComment}
-                disabled={!newComment.trim() || isAddingComment}
-                className="bg-green-600 text-black font-semibold hover:bg-green-700"
-              >
-                {isAddingComment ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Adding...
-                  </>
-                ) : (
-                  <>
-                    <Send className="mr-2 h-4 w-4" />
-                    Add Comment
-                  </>
-                )}
-              </Button>
-            </div>
+            {currentUser ? (
+              <div className="mb-6">
+                <Textarea
+                  placeholder="Write a comment..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500 mb-3"
+                  rows={3}
+                />
+                <Button
+                  onClick={handleAddComment}
+                  disabled={!newComment.trim() || isAddingComment}
+                  className="bg-green-600 text-black font-semibold hover:bg-green-700"
+                >
+                  {isAddingComment ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="mr-2 h-4 w-4" />
+                      Add Comment
+                    </>
+                  )}
+                </Button>
+              </div>
+            ) : (
+              <div className="mb-6 text-center">
+                <p className="text-gray-400 mb-3">
+                  Login to add comments and like posts
+                </p>
+                <Button
+                  onClick={() => router.push("/auth/login")}
+                  className="bg-green-600 text-black font-semibold hover:bg-green-700"
+                >
+                  Login
+                </Button>
+              </div>
+            )}
 
             {/* Comments List */}
             <div className="space-y-4">
-              {post.comments.length > 0 ? (
-                post.comments.map((comment) => (
-                  <div key={comment.id} className="bg-gray-700 rounded-lg p-4">
-                    <div className="flex items-start space-x-3">
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage src="/placeholder.svg" />
-                        <AvatarFallback className="bg-gray-600 text-white text-sm">
-                          {comment.author.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className="font-medium text-white">
-                            {comment.author.name}
-                          </span>
-                          <span className="text-xs text-gray-400">
-                            {formatDistanceToNow(new Date(comment.createdAt), {
-                              addSuffix: true,
-                            })}
-                          </span>
+              {comments.length > 0 ? (
+                comments.map((comment) => {
+                  const author = commentAuthors[comment.authorId];
+                  if (!author) return null; // Skip if author not loaded yet
+
+                  return (
+                    <div
+                      key={comment.id}
+                      className="bg-gray-700 rounded-lg p-4"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <Avatar className="w-8 h-8">
+                          <AvatarImage src="/placeholder.svg" />
+                          <AvatarFallback className="bg-gray-600 text-white text-sm">
+                            {author.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium text-white">
+                                {author.name}
+                              </span>
+                              <span className="text-xs text-gray-400">
+                                {formatDistanceToNow(
+                                  new Date(comment.createdAt),
+                                  {
+                                    addSuffix: true,
+                                  }
+                                )}
+                              </span>
+                            </div>
+                            {currentUser &&
+                              currentUser.id === comment.authorId && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() =>
+                                    handleDeleteComment(comment.id)
+                                  }
+                                  className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                          </div>
+                          <p className="text-gray-300">{comment.content}</p>
                         </div>
-                        <p className="text-gray-300">{comment.content}</p>
                       </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
                 <p className="text-gray-400 text-center py-6">
                   No comments yet. Be the first to comment!
