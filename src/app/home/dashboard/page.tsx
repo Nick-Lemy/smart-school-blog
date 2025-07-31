@@ -46,6 +46,7 @@ import api from "@/lib/utils";
 import { Post, Event } from "@/lib/types";
 import { AxiosResponse } from "axios";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -307,9 +308,9 @@ export default function DashboardPage() {
                   }}
                 >
                   <DialogTrigger asChild>
-                    <Button className="w-full bg-green-600 text-black font-semibold hover:bg-green-700">
-                      <Plus className="mr-2 h-4 w-4" />
-                      New Post
+                    <Button className="w-full bg-green-600 text-black font-semibold hover:bg-green-700 flex flex-row items-center justify-center gap-2">
+                      <Plus className="h-4 w-4" />
+                      <span>New Post</span>
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
@@ -384,10 +385,10 @@ export default function DashboardPage() {
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
-                      className="w-full text-black border-gray-600 hover:bg-gray-700"
+                      className="w-full text-black border-gray-600 hover:bg-gray-700 flex flex-row items-center justify-center gap-2"
                     >
-                      <Calendar className="mr-2 h-4 w-4" />
-                      Create Event
+                      <Calendar className="h-4 w-4" />
+                      <span>Create Event</span>
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
@@ -692,12 +693,17 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           <div className="flex w-full items-center space-x-2">
-                            <Button
-                              variant="outline"
-                              className="text-black w-full"
+                            <Link
+                              className="w-full"
+                              href={`/home/events/${event.id}`}
                             >
-                              View Details
-                            </Button>
+                              <Button
+                                variant="outline"
+                                className="text-black w-full"
+                              >
+                                View Details
+                              </Button>
+                            </Link>
                           </div>
                         </CardContent>
                       </Card>

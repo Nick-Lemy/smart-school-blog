@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -213,221 +212,208 @@ export default function UniquePostPage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Main Post Card */}
-        <Card className="bg-gray-800 border-gray-600 text-white mb-8">
-          <CardHeader>
-            <CardTitle className="text-2xl text-green-500 mb-4">
-              {post.title}
-            </CardTitle>
+        {/* Main Post Content */}
+        <div className="bg-gray-800 rounded-lg p-6 mb-8">
+          <h1 className="text-3xl font-bold text-green-500 mb-6">
+            {post.title}
+          </h1>
 
-            {/* Author Info */}
-            <div className="flex items-center space-x-3 mb-4">
-              <Avatar className="w-10 h-10">
-                <AvatarImage src="/placeholder.svg" />
-                <AvatarFallback className="bg-gray-700 text-white">
-                  {post.author.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <p className="font-medium text-white">{post.author.name}</p>
-                <div className="flex items-center space-x-4 text-sm text-gray-400">
-                  <span className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    {formatDistanceToNow(new Date(post.createdAt), {
-                      addSuffix: true,
-                    })}
-                  </span>
-                  <span className="flex items-center">
-                    <User className="w-4 h-4 mr-1" />
-                    {post.author.role}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </CardHeader>
-
-          <CardContent>
-            {/* Post Content */}
-            <div className="prose prose-invert max-w-none mb-6">
-              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                {post.content}
+          {/* Author Info */}
+          <div className="flex items-center space-x-3 mb-6 pb-6 border-b border-gray-600">
+            <Avatar className="w-12 h-12">
+              <AvatarImage src="/placeholder.svg" />
+              <AvatarFallback className="bg-gray-700 text-white">
+                {post.author.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="font-medium text-white text-lg">
+                {post.author.name}
               </p>
+              <div className="flex items-center space-x-4 text-sm text-gray-400">
+                <span className="flex items-center">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  {formatDistanceToNow(new Date(post.createdAt), {
+                    addSuffix: true,
+                  })}
+                </span>
+                <span className="flex items-center">
+                  <User className="w-4 h-4 mr-1" />
+                  {post.author.role}
+                </span>
+              </div>
             </div>
+          </div>
 
-            {/* AI Summary */}
-            {post.aiSummary && (
-              <div className="bg-gray-600/50 border-l-4 border-green-400 p-4 rounded mb-6">
-                <div className="flex items-start space-x-2">
-                  <Sparkles className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-medium text-green-500 mb-2">
-                      AI SUMMARY
-                    </p>
-                    <p className="text-sm text-gray-300">{post.aiSummary}</p>
-                  </div>
+          {/* Post Content */}
+          <div className="mb-6">
+            <p className="text-gray-300 leading-relaxed whitespace-pre-wrap text-lg">
+              {post.content}
+            </p>
+          </div>
+
+          {/* AI Summary */}
+          {post.aiSummary && (
+            <div className="bg-green-500/10 border-l-4 border-green-400 p-4 rounded mb-6">
+              <div className="flex items-start space-x-2">
+                <Sparkles className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-green-500 mb-2">
+                    AI SUMMARY
+                  </p>
+                  <p className="text-sm text-gray-300">{post.aiSummary}</p>
                 </div>
               </div>
-            )}
-
-            {/* Post Actions */}
-            <div className="flex items-center space-x-6 pt-4 border-t border-gray-600">
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={handleLikePost}
-                  disabled={isLiking || !currentUser}
-                  className={`flex items-center space-x-2 transition-colors disabled:opacity-50 ${
-                    userHasLiked
-                      ? "text-red-500 hover:text-red-600"
-                      : "text-gray-400 hover:text-red-500"
-                  }`}
-                >
-                  {isLiking ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <Heart
-                      className={`w-5 h-5 ${
-                        userHasLiked ? "fill-current" : ""
-                      }`}
-                    />
-                  )}
-                </button>
-                <UserListModal
-                  count={post.likes.length}
-                  type="likes"
-                  postId={post.id.toString()}
-                >
-                  <span className="text-gray-400 hover:text-red-400 cursor-pointer transition-colors">
-                    {post.likes.length}
-                  </span>
-                </UserListModal>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-400">
-                <MessageCircle className="w-5 h-5" />
-                <span>{comments.length}</span>
-              </div>
             </div>
-          </CardContent>
-        </Card>
+          )}
+
+          {/* Post Actions */}
+          <div className="flex items-center space-x-6 pt-4 border-t border-gray-600">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={handleLikePost}
+                disabled={isLiking || !currentUser}
+                className={`flex items-center space-x-2 transition-colors disabled:opacity-50 ${
+                  userHasLiked
+                    ? "text-red-500 hover:text-red-600"
+                    : "text-gray-400 hover:text-red-500"
+                }`}
+              >
+                {isLiking ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Heart
+                    className={`w-5 h-5 ${userHasLiked ? "fill-current" : ""}`}
+                  />
+                )}
+              </button>
+              <UserListModal
+                count={post.likes.length}
+                type="likes"
+                postId={post.id.toString()}
+              >
+                <span className="text-gray-400 hover:text-red-400 cursor-pointer transition-colors px-2 py-1 rounded hover:bg-gray-700/50">
+                  {post.likes.length} likes
+                </span>
+              </UserListModal>
+            </div>
+            <div className="flex items-center space-x-2 text-gray-400">
+              <MessageCircle className="w-5 h-5" />
+              <span>{comments.length} comments</span>
+            </div>
+          </div>
+        </div>
 
         {/* Comments Section */}
-        <Card className="bg-gray-800 border-gray-600 text-white">
-          <CardHeader>
-            <CardTitle className="text-lg text-green-500">
-              Comments ({comments.length})
-            </CardTitle>
-          </CardHeader>
+        <div className="bg-gray-800 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-green-500 mb-6">
+            Comments ({comments.length})
+          </h2>
 
-          <CardContent>
-            {/* Add Comment */}
-            {currentUser ? (
-              <div className="mb-6">
-                <Textarea
-                  placeholder="Write a comment..."
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500 mb-3"
-                  rows={3}
-                />
-                <Button
-                  onClick={handleAddComment}
-                  disabled={!newComment.trim() || isAddingComment}
-                  className="bg-green-600 text-black font-semibold hover:bg-green-700"
-                >
-                  {isAddingComment ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Adding...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="mr-2 h-4 w-4" />
-                      Add Comment
-                    </>
-                  )}
-                </Button>
-              </div>
-            ) : (
-              <div className="mb-6 text-center">
-                <p className="text-gray-400 mb-3">
-                  Login to add comments and like posts
-                </p>
-                <Button
-                  onClick={() => router.push("/auth/login")}
-                  className="bg-green-600 text-black font-semibold hover:bg-green-700"
-                >
-                  Login
-                </Button>
-              </div>
-            )}
+          {/* Add Comment */}
+          {currentUser ? (
+            <div className="mb-6">
+              <Textarea
+                placeholder="Write a comment..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500 mb-3"
+                rows={3}
+              />
+              <Button
+                onClick={handleAddComment}
+                disabled={!newComment.trim() || isAddingComment}
+                className="bg-green-600 text-black font-semibold hover:bg-green-700"
+              >
+                {isAddingComment ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <Send className="mr-2 h-4 w-4" />
+                    Add Comment
+                  </>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <div className="mb-6 text-center">
+              <p className="text-gray-400 mb-3">
+                Login to add comments and like posts
+              </p>
+              <Button
+                onClick={() => router.push("/auth/login")}
+                className="bg-green-600 text-black font-semibold hover:bg-green-700"
+              >
+                Login
+              </Button>
+            </div>
+          )}
 
-            {/* Comments List */}
-            <div className="space-y-4">
-              {comments.length > 0 ? (
-                comments.map((comment) => {
-                  const author = commentAuthors[comment.authorId];
-                  if (!author) return null; // Skip if author not loaded yet
+          {/* Comments List */}
+          <div className="space-y-4">
+            {comments.length > 0 ? (
+              comments.map((comment) => {
+                const author = commentAuthors[comment.authorId];
+                if (!author) return null; // Skip if author not loaded yet
 
-                  return (
-                    <div
-                      key={comment.id}
-                      className="bg-gray-700 rounded-lg p-4"
-                    >
-                      <div className="flex items-start space-x-3">
-                        <Avatar className="w-8 h-8">
-                          <AvatarImage src="/placeholder.svg" />
-                          <AvatarFallback className="bg-gray-600 text-white text-sm">
-                            {author.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-medium text-white">
-                                {author.name}
-                              </span>
-                              <span className="text-xs text-gray-400">
-                                {formatDistanceToNow(
-                                  new Date(comment.createdAt),
-                                  {
-                                    addSuffix: true,
-                                  }
-                                )}
-                              </span>
-                            </div>
-                            {currentUser &&
-                              currentUser.id === comment.authorId && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() =>
-                                    handleDeleteComment(comment.id)
-                                  }
-                                  className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
+                return (
+                  <div key={comment.id} className="bg-gray-700 rounded-lg p-4">
+                    <div className="flex items-start space-x-3">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src="/placeholder.svg" />
+                        <AvatarFallback className="bg-gray-600 text-white text-sm">
+                          {author.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium text-white">
+                              {author.name}
+                            </span>
+                            <span className="text-xs text-gray-400">
+                              {formatDistanceToNow(
+                                new Date(comment.createdAt),
+                                {
+                                  addSuffix: true,
+                                }
                               )}
+                            </span>
                           </div>
-                          <p className="text-gray-300">{comment.content}</p>
+                          {currentUser &&
+                            currentUser.id === comment.authorId && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteComment(comment.id)}
+                                className="text-red-500 hover:text-red-700 h-6 w-6 p-0"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
                         </div>
+                        <p className="text-gray-300">{comment.content}</p>
                       </div>
                     </div>
-                  );
-                })
-              ) : (
-                <p className="text-gray-400 text-center py-6">
-                  No comments yet. Be the first to comment!
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-gray-400 text-center py-6">
+                No comments yet. Be the first to comment!
+              </p>
+            )}
+          </div>
+        </div>
       </div>
     </main>
   );

@@ -44,6 +44,7 @@ import { Event, User } from "@/lib/types";
 import api from "@/lib/utils";
 import { AxiosResponse } from "axios";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 export default function EventsPage() {
   const router = useRouter();
@@ -173,143 +174,141 @@ export default function EventsPage() {
             <div className="flex items-center space-x-4">
               <h1 className="text-xl font-bold text-green-600">Events</h1>
             </div>
-            <Button className="bg-green-600 text-black font-semibold">
-              <Dialog open={eventDialogOpen} onOpenChange={setEventDialogOpen}>
-                <DialogTrigger asChild>
-                  <span>
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Event
-                  </span>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
-                  <DialogHeader>
-                    <DialogTitle className="text-white">
-                      Create New Event
-                    </DialogTitle>
-                    <DialogDescription className="text-gray-400">
-                      Organize study groups, meetups, or campus activities
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <Input
-                      placeholder="Event title (e.g., Python Study Group)"
-                      value={newEvent.title}
-                      onChange={(e) =>
-                        setNewEvent({ ...newEvent, title: e.target.value })
-                      }
-                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
-                    />
-                    <Input
-                      placeholder="Cover Image URL (optional)"
-                      value={newEvent.coverImage}
-                      onChange={(e) =>
-                        setNewEvent({ ...newEvent, coverImage: e.target.value })
-                      }
-                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
-                    />
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          Start Date & Time
-                        </label>
-                        <Input
-                          type="datetime-local"
-                          value={newEvent.startDate}
-                          onChange={(e) =>
-                            setNewEvent({
-                              ...newEvent,
-                              startDate: e.target.value,
-                            })
-                          }
-                          className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
-                          End Date & Time
-                        </label>
-                        <Input
-                          type="datetime-local"
-                          value={newEvent.endDate}
-                          onChange={(e) =>
-                            setNewEvent({
-                              ...newEvent,
-                              endDate: e.target.value,
-                            })
-                          }
-                          className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
-                        />
-                      </div>
-                    </div>
-                    <Input
-                      placeholder="Location (e.g., Library Room 204)"
-                      value={newEvent.location}
-                      onChange={(e) =>
-                        setNewEvent({ ...newEvent, location: e.target.value })
-                      }
-                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
-                    />
-                    <Select
-                      onValueChange={(value) =>
-                        setNewEvent({ ...newEvent, category: value })
-                      }
-                    >
-                      <SelectTrigger className="bg-gray-700 text-white border-gray-600">
-                        <SelectValue placeholder="Event category" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-gray-700 text-white border-gray-600">
-                        <SelectItem value="Academic">Academic</SelectItem>
-                        <SelectItem value="Social">Social</SelectItem>
-                        <SelectItem value="Cultural">Cultural</SelectItem>
-                        <SelectItem value="Sports">Sports</SelectItem>
-                        <SelectItem value="Competition">Competition</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Textarea
-                      placeholder="Describe your event, what participants can expect, requirements, etc..."
-                      rows={4}
-                      value={newEvent.description}
-                      onChange={(e) =>
-                        setNewEvent({
-                          ...newEvent,
-                          description: e.target.value,
-                        })
-                      }
-                      className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
-                    />
-                    <div className="flex justify-end space-x-2">
-                      <Button
-                        variant="outline"
-                        className="text-white border-gray-600 hover:bg-gray-700"
-                        onClick={() => setEventDialogOpen(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        className="bg-green-600 text-black font-semibold hover:bg-green-700"
-                        onClick={handleCreateEvent}
-                        disabled={
-                          isCreatingEvent ||
-                          !newEvent.title ||
-                          !newEvent.description ||
-                          !newEvent.startDate ||
-                          !newEvent.endDate
+            <Dialog open={eventDialogOpen} onOpenChange={setEventDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-green-600 text-black font-semibold flex flex-row items-center justify-center gap-2">
+                  <Plus className="h-4 w-4" />
+                  <span>Create Event</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
+                <DialogHeader>
+                  <DialogTitle className="text-white">
+                    Create New Event
+                  </DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    Organize study groups, meetups, or campus activities
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <Input
+                    placeholder="Event title (e.g., Python Study Group)"
+                    value={newEvent.title}
+                    onChange={(e) =>
+                      setNewEvent({ ...newEvent, title: e.target.value })
+                    }
+                    className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                  />
+                  <Input
+                    placeholder="Cover Image URL (optional)"
+                    value={newEvent.coverImage}
+                    onChange={(e) =>
+                      setNewEvent({ ...newEvent, coverImage: e.target.value })
+                    }
+                    className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        Start Date & Time
+                      </label>
+                      <Input
+                        type="datetime-local"
+                        value={newEvent.startDate}
+                        onChange={(e) =>
+                          setNewEvent({
+                            ...newEvent,
+                            startDate: e.target.value,
+                          })
                         }
-                      >
-                        {isCreatingEvent ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Creating...
-                          </>
-                        ) : (
-                          "Create Event"
-                        )}
-                      </Button>
+                        className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-2">
+                        End Date & Time
+                      </label>
+                      <Input
+                        type="datetime-local"
+                        value={newEvent.endDate}
+                        onChange={(e) =>
+                          setNewEvent({
+                            ...newEvent,
+                            endDate: e.target.value,
+                          })
+                        }
+                        className="bg-gray-700 text-white border-gray-600 focus:ring-green-500 focus:border-green-500"
+                      />
                     </div>
                   </div>
-                </DialogContent>
-              </Dialog>
-            </Button>
+                  <Input
+                    placeholder="Location (e.g., Library Room 204)"
+                    value={newEvent.location}
+                    onChange={(e) =>
+                      setNewEvent({ ...newEvent, location: e.target.value })
+                    }
+                    className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                  />
+                  <Select
+                    onValueChange={(value) =>
+                      setNewEvent({ ...newEvent, category: value })
+                    }
+                  >
+                    <SelectTrigger className="bg-gray-700 text-white border-gray-600">
+                      <SelectValue placeholder="Event category" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-gray-700 text-white border-gray-600">
+                      <SelectItem value="Academic">Academic</SelectItem>
+                      <SelectItem value="Social">Social</SelectItem>
+                      <SelectItem value="Cultural">Cultural</SelectItem>
+                      <SelectItem value="Sports">Sports</SelectItem>
+                      <SelectItem value="Competition">Competition</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Textarea
+                    placeholder="Describe your event, what participants can expect, requirements, etc..."
+                    rows={4}
+                    value={newEvent.description}
+                    onChange={(e) =>
+                      setNewEvent({
+                        ...newEvent,
+                        description: e.target.value,
+                      })
+                    }
+                    className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
+                  />
+                  <div className="flex justify-end space-x-2">
+                    <Button
+                      variant="outline"
+                      className="text-white border-gray-600 hover:bg-gray-700"
+                      onClick={() => setEventDialogOpen(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      className="bg-green-600 text-black font-semibold hover:bg-green-700"
+                      onClick={handleCreateEvent}
+                      disabled={
+                        isCreatingEvent ||
+                        !newEvent.title ||
+                        !newEvent.description ||
+                        !newEvent.startDate ||
+                        !newEvent.endDate
+                      }
+                    >
+                      {isCreatingEvent ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        "Create Event"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </header>
@@ -414,10 +413,12 @@ export default function EventsPage() {
                             </span>
                           </div>
 
-                          <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold">
-                            <Ticket className="w-4 h-4 mr-2" />
-                            Register Now
-                          </Button>
+                          <Link href={`/home/events/${event.id}`}>
+                            <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold">
+                              {/* <Ticket className="w-4 h-4 mr-2" /> */}
+                              View Details
+                            </Button>
+                          </Link>
                         </CardContent>
                       </Card>
                     ))

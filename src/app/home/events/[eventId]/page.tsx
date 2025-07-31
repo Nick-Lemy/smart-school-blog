@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   ArrowLeft,
@@ -147,11 +146,11 @@ export default function UniqueEventPage() {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Main Event Card */}
-        <Card className="bg-gray-800 border-gray-600 text-white mb-8">
+        {/* Main Event Content */}
+        <div className="bg-gray-800 rounded-lg overflow-hidden mb-8">
           {/* Event Cover Image */}
           {event.coverImage && (
-            <div className="w-full h-64 bg-gray-700 rounded-t-lg overflow-hidden">
+            <div className="w-full h-64 bg-gray-700 overflow-hidden">
               <Image
                 src={event.coverImage}
                 alt={event.title}
@@ -162,12 +161,12 @@ export default function UniqueEventPage() {
             </div>
           )}
 
-          <CardHeader>
-            <div className="flex items-start justify-between mb-4">
+          <div className="p-6">
+            <div className="flex items-start justify-between mb-6">
               <div className="flex-1">
-                <CardTitle className="text-2xl text-green-500 mb-2">
+                <h1 className="text-3xl font-bold text-green-500 mb-4">
                   {event.title}
-                </CardTitle>
+                </h1>
 
                 {/* Category Badge */}
                 {event.category && (
@@ -181,26 +180,26 @@ export default function UniqueEventPage() {
               </div>
 
               {/* Attendees Count */}
-              <div className="text-right">
-                <div className="flex items-center space-x-2 text-gray-400">
-                  <Users className="w-5 h-5" />
-                  <UserListModal
-                    count={event.attendees.length}
-                    type="attendees"
-                    eventId={event.id.toString()}
-                  >
-                    <span className="text-lg font-semibold text-white hover:text-green-400 cursor-pointer transition-colors">
+              <UserListModal
+                count={event.attendees.length}
+                type="attendees"
+                eventId={event.id.toString()}
+              >
+                <div className="text-right cursor-pointer hover:bg-gray-700/50 p-3 rounded-lg transition-colors">
+                  <div className="flex items-center justify-end space-x-2 text-gray-400">
+                    <Users className="w-5 h-5" />
+                    <span className="text-lg font-semibold text-white hover:text-green-400 transition-colors">
                       {event.attendees.length}
                     </span>
-                  </UserListModal>
+                  </div>
+                  <p className="text-sm text-gray-400">Attendees</p>
                 </div>
-                <p className="text-sm text-gray-400">Attendees</p>
-              </div>
+              </UserListModal>
             </div>
 
             {/* Host Info */}
             {host && (
-              <div className="flex items-center space-x-3 mb-4 p-4 bg-gray-700 rounded-lg">
+              <div className="flex items-center space-x-3 mb-6 p-4 bg-gray-700 rounded-lg">
                 <Avatar className="w-12 h-12">
                   <AvatarImage src="/placeholder.svg" />
                   <AvatarFallback className="bg-gray-600 text-white">
@@ -211,7 +210,7 @@ export default function UniqueEventPage() {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-white">
+                  <p className="font-medium text-white text-lg">
                     Hosted by {host.name}
                   </p>
                   <div className="flex items-center space-x-4 text-sm text-gray-400">
@@ -230,9 +229,7 @@ export default function UniqueEventPage() {
                 </div>
               </div>
             )}
-          </CardHeader>
 
-          <CardContent>
             {/* Event Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Date & Time */}
@@ -278,14 +275,12 @@ export default function UniqueEventPage() {
 
             {/* Event Description */}
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-white mb-3">
+              <h3 className="text-xl font-semibold text-white mb-4">
                 About This Event
               </h3>
-              <div className="prose prose-invert max-w-none">
-                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-                  {event.description}
-                </p>
-              </div>
+              <p className="text-gray-300 leading-relaxed whitespace-pre-wrap text-lg">
+                {event.description}
+              </p>
             </div>
 
             {/* Action Buttons */}
@@ -334,50 +329,8 @@ export default function UniqueEventPage() {
                 Share Event
               </Button>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Additional Info Card */}
-        <Card className="bg-gray-800 border-gray-600 text-white">
-          <CardHeader>
-            <CardTitle className="text-lg text-green-500">
-              Event Information
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-4 bg-gray-700 rounded-lg">
-                <Calendar className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-400 mb-1">Duration</p>
-                <p className="font-semibold text-white">
-                  {Math.ceil(
-                    (new Date(event.endDate).getTime() -
-                      new Date(event.startDate).getTime()) /
-                      (1000 * 60 * 60 * 24)
-                  )}{" "}
-                  day(s)
-                </p>
-              </div>
-
-              <div className="text-center p-4 bg-gray-700 rounded-lg">
-                <Users className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-400 mb-1">Attendees</p>
-                <p className="font-semibold text-white">
-                  {event.attendees.length}
-                </p>
-              </div>
-
-              <div className="text-center p-4 bg-gray-700 rounded-lg">
-                <Tag className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-400 mb-1">Category</p>
-                <p className="font-semibold text-white">
-                  {event.category || "General"}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </main>
   );
