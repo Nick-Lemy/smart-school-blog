@@ -1,13 +1,35 @@
 "use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { BookOpen, CalendarDays, Home } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
 export default function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.replace("/auth/login");
+      return;
+    }
+
+    // Call protected API
+    // api
+    //   .get("/api/me")
+    //   .then((res) => console.log(res.data))
+    //   .catch(() => {
+    //     logout(); // invalid token
+    //     router.replace("/login");
+    //   });
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) return null;
   return (
     <>
       <div className="pb-12">{children}</div>

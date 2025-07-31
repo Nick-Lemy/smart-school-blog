@@ -20,12 +20,15 @@ export default function LoginPage() {
     api
       .post("/auth/login", formInfo)
       .then((response) => {
-        login(response.data.token);
+        login(response.data.access_token);
         // Redirect to dashboard after successful login
         router.push("/home/dashboard");
       })
       .catch((error) => {
         // Handle login error
+        setError(
+          error.response?.data?.message || "Login failed. Please try again."
+        );
         console.error("Login failed:", error);
       })
       .finally(() => {
@@ -53,6 +56,11 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
+        {error && (
+          <div className="text-red-500 text-sm text-center">
+            {error ? error : "An error occurred. Please try again."}
+          </div>
+        )}
 
         <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
