@@ -288,7 +288,9 @@ export default function UniquePostPage() {
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <Heart
-                      className={`w-5 h-5 ${userHasLiked ? "fill-current" : ""}`}
+                      className={`w-5 h-5 ${
+                        userHasLiked ? "fill-current" : ""
+                      }`}
                     />
                   )}
                 </button>

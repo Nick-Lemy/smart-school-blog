@@ -44,10 +44,10 @@ export default function UserListModal({
   useEffect(() => {
     const fetchUsers = async () => {
       if (!isOpen) return;
-      
+
       setIsLoading(true);
       setError(null);
-      
+
       try {
         let endpoint = "";
         if (type === "likes" && postId) {
@@ -74,7 +74,7 @@ export default function UserListModal({
   const refetchUsers = async () => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       let endpoint = "";
       if (type === "likes" && postId) {
@@ -118,9 +118,7 @@ export default function UserListModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-md bg-gray-800 text-white border-gray-600">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2 text-white">
@@ -128,7 +126,7 @@ export default function UserListModal({
             <span>{getTitle()}</span>
           </DialogTitle>
         </DialogHeader>
-        
+
         <div className="max-h-96 overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
