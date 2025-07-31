@@ -5,6 +5,7 @@ import api from "@/lib/utils";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import { revalidatePath } from "next/cache";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function LoginPage() {
       .then((response) => {
         login(response.data.access_token);
         // Redirect to dashboard after successful login
+        revalidatePath("/home/dashboard");
         router.push("/home/dashboard");
       })
       .catch((error) => {
