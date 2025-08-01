@@ -14,7 +14,7 @@ A modern, responsive blog platform's frontend built with Next.js, TypeScript, an
 
 ## Tech Stack
 
-- **Frontend**: Next.js 13+ (App Router), TypeScript, Tailwind CSS
+- **Frontend**: Next.js (App Router), TypeScript, Tailwind CSS
 - **UI Components**: Radix UI, Shadcn/ui
 - **Icons**: Lucide React
 - **Date Handling**: date-fns
