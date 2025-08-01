@@ -20,7 +20,8 @@ import {
 import { Post } from "@/lib/types";
 import api from "@/lib/utils";
 import { AxiosResponse } from "axios";
-import { Sparkles, Search, Loader2, Plus, RefreshCw, Link } from "lucide-react";
+import { Sparkles, Search, Loader2, Plus, RefreshCw } from "lucide-react";
+import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
