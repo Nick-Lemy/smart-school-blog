@@ -1,4 +1,4 @@
-# Smart School Blog
+# Smart School Blog Frontend
 
 A modern, responsive blog platform's frontend built with Next.js, TypeScript, and Tailwind CSS. This application provides a comprehensive blogging and event management system for educational institutions.
 
