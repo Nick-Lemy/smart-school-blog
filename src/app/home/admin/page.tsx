@@ -23,6 +23,7 @@ import {
   Loader2,
   Shield,
   CheckCircle,
+  VerifiedIcon,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -131,24 +132,26 @@ function AdminDashboardContent() {
       {/* Header */}
       <header className="bg-gray-800 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-5">
-            <div className="flex items-center space-x-4">
-              <Shield className="w-6 h-6 text-green-500" />
-              <h1 className="text-xl font-bold text-green-600">
+          <div className="flex justify-between items-center py-4 sm:py-5">
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-green-500" />
+              <h1 className="text-lg sm:text-xl font-bold text-green-600">
                 Admin Dashboard
               </h1>
             </div>
             <div className="flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-sm text-white">Verified Admin</span>
+              <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
+              <span className="text-xs sm:text-sm text-white">
+                Verified Admin
+              </span>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Stats Overview */}
-        <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card className="bg-gray-800 border-gray-600 text-white">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-gray-400">
@@ -189,33 +192,41 @@ function AdminDashboardContent() {
 
         {/* Content Management Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-3 bg-gray-700 border border-gray-600">
+          <TabsList className="grid grid-cols-3 bg-gray-700 border border-gray-600 w-full">
             <TabsTrigger
               value="posts"
               className="text-white data-[state=active]:bg-green-600 data-[state=active]:text-black font-semibold"
             >
-              Posts ({posts.length})
+              <span className="hidden sm:inline">Posts ({posts.length})</span>
+              <span className="sm:hidden">Posts</span>
             </TabsTrigger>
             <TabsTrigger
               value="events"
               className="text-white data-[state=active]:bg-green-600 data-[state=active]:text-black font-semibold"
             >
-              Events ({events.length})
+              <span className="hidden sm:inline">Events ({events.length})</span>
+              <span className="sm:hidden">Events</span>
             </TabsTrigger>
             <TabsTrigger
               value="users"
               className="text-white data-[state=active]:bg-green-600 data-[state=active]:text-black font-semibold"
             >
-              Users ({users.length})
+              <span className="hidden sm:inline">Users ({users.length})</span>
+              <span className="sm:hidden">Users</span>
             </TabsTrigger>
           </TabsList>
 
           {/* Posts Tab */}
-          <TabsContent value="posts" className="space-y-6 mt-6">
+          <TabsContent
+            value="posts"
+            className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+          >
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-white">Manage Posts</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">
+                Manage Posts
+              </h2>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="animate-spin mr-2 w-4 h-4" />
@@ -230,13 +241,12 @@ function AdminDashboardContent() {
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <CardTitle
-                            className="text-lg text-green-500 hover:text-green-400 cursor-pointer"
-                            onClick={() => router.push(`/home/blog/${post.id}`)}
-                          >
-                            {post.title}
+                          <CardTitle className="text-base sm:text-lg text-green-500 hover:text-green-400 cursor-pointer line-clamp-2">
+                            <Link href={`/home/blog/${post.id}`}>
+                              {post.title}
+                            </Link>
                           </CardTitle>
-                          <CardDescription className="text-gray-400 line-clamp-2 mt-2">
+                          <CardDescription className="text-gray-400 line-clamp-2 mt-2 text-sm">
                             {post.content.slice(0, 150)}...
                           </CardDescription>
                         </div>
@@ -255,8 +265,8 @@ function AdminDashboardContent() {
                               )}
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-gray-800 border-gray-600">
-                            <AlertDialogHeader>
+                          <AlertDialogContent className="bg-gray-800 border-gray-600 mx-4 sm:mx-0 max-w-md">
+                            <AlertDialogHeader className="px-2">
                               <AlertDialogTitle className="text-white">
                                 Delete Post
                               </AlertDialogTitle>
@@ -266,12 +276,12 @@ function AdminDashboardContent() {
                                 undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="text-white border-gray-600 hover:bg-gray-700">
+                            <AlertDialogFooter className="px-2 flex-col sm:flex-row gap-2">
+                              <AlertDialogCancel className="text-white border-gray-600 hover:bg-gray-700 w-full sm:w-auto">
                                 Cancel
                               </AlertDialogCancel>
                               <AlertDialogAction
-                                className="bg-red-600 text-white hover:bg-red-700"
+                                className="bg-red-600 text-white hover:bg-red-700 w-full sm:w-auto"
                                 onClick={() => handleDeletePost(post.id)}
                               >
                                 Delete
@@ -282,20 +292,22 @@ function AdminDashboardContent() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center justify-between text-sm text-gray-400">
-                        <div className="flex items-center space-x-4">
-                          <span>Author: {post.author.name}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 text-sm text-gray-400">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+                          <span className="text-xs sm:text-sm">
+                            Author: {post.author.name}
+                          </span>
                           <span className="flex items-center space-x-1">
-                            <Heart className="w-4 h-4" />
+                            <Heart className="w-3 h-3 sm:w-4 sm:h-4" />
                             <span>{post.likes.length}</span>
                           </span>
                           <span className="flex items-center space-x-1">
-                            <MessageCircle className="w-4 h-4" />
+                            <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                             <span>{post.comments.length}</span>
                           </span>
                         </div>
-                        <span className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
+                        <span className="flex items-center space-x-1 text-xs sm:text-sm">
+                          <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                           <span>
                             {formatDistanceToNow(new Date(post.createdAt), {
                               addSuffix: true,
@@ -315,11 +327,16 @@ function AdminDashboardContent() {
           </TabsContent>
 
           {/* Events Tab */}
-          <TabsContent value="events" className="space-y-6 mt-6">
+          <TabsContent
+            value="events"
+            className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+          >
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-white">Manage Events</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">
+                Manage Events
+              </h2>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="animate-spin mr-2 w-4 h-4" />
@@ -335,14 +352,14 @@ function AdminDashboardContent() {
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <CardTitle
-                            className="text-lg text-green-500 hover:text-green-400 cursor-pointer"
+                            className="text-base sm:text-lg text-green-500 hover:text-green-400 cursor-pointer line-clamp-2"
                             onClick={() =>
                               router.push(`/home/events/${event.id}`)
                             }
                           >
                             {event.title}
                           </CardTitle>
-                          <CardDescription className="text-gray-400 line-clamp-2 mt-2">
+                          <CardDescription className="text-gray-400 line-clamp-2 mt-2 text-sm">
                             {event.description}
                           </CardDescription>
                         </div>
@@ -361,8 +378,8 @@ function AdminDashboardContent() {
                               )}
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-gray-800 border-gray-600">
-                            <AlertDialogHeader>
+                          <AlertDialogContent className="bg-gray-800 border-gray-600 mx-4 sm:mx-0 max-w-md">
+                            <AlertDialogHeader className="px-2">
                               <AlertDialogTitle className="text-white">
                                 Delete Event
                               </AlertDialogTitle>
@@ -372,12 +389,12 @@ function AdminDashboardContent() {
                                 undone.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="text-white border-gray-600 hover:bg-gray-700">
+                            <AlertDialogFooter className="px-2 flex-col sm:flex-row gap-2">
+                              <AlertDialogCancel className="text-white border-gray-600 hover:bg-gray-700 w-full sm:w-auto">
                                 Cancel
                               </AlertDialogCancel>
                               <AlertDialogAction
-                                className="bg-red-600 text-white hover:bg-red-700"
+                                className="bg-red-600 text-white hover:bg-red-700 w-full sm:w-auto"
                                 onClick={() => handleDeleteEvent(event.id)}
                               >
                                 Delete
@@ -388,27 +405,27 @@ function AdminDashboardContent() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-2 text-sm text-gray-400 mb-4">
+                      <div className="space-y-2 text-xs sm:text-sm text-gray-400 mb-4">
                         <div className="flex items-center space-x-2">
-                          <Calendar className="w-4 h-4 text-green-400" />
-                          <span>
+                          <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />
+                          <span className="break-words">
                             {new Date(event.startDate).toLocaleDateString()} -{" "}
                             {new Date(event.endDate).toLocaleDateString()}
                           </span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <MapPin className="w-4 h-4 text-green-400" />
-                          <span>{event.location}</span>
+                          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />
+                          <span className="break-words">{event.location}</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Users className="w-4 h-4 text-green-400" />
+                          <Users className="w-3 h-3 sm:w-4 sm:h-4 text-green-400 flex-shrink-0" />
                           <span>{event.attendees.length} attendees</span>
                         </div>
                       </div>
-                      <div className="flex items-center justify-between text-sm text-gray-400">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 text-xs sm:text-sm text-gray-400">
                         <span>Host ID: {event.hostId}</span>
                         <span className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                           <span>
                             {formatDistanceToNow(new Date(event.createdAt), {
                               addSuffix: true,
@@ -428,11 +445,16 @@ function AdminDashboardContent() {
           </TabsContent>
 
           {/* Users Tab */}
-          <TabsContent value="users" className="space-y-6 mt-6">
+          <TabsContent
+            value="users"
+            className="space-y-4 sm:space-y-6 mt-4 sm:mt-6"
+          >
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-white">Manage Users</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white">
+                Manage Users
+              </h2>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="animate-spin mr-2 w-4 h-4" />
@@ -447,34 +469,32 @@ function AdminDashboardContent() {
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3 flex-1">
-                          <Avatar className="w-12 h-12">
+                          <Avatar className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
                             <AvatarImage src="/placeholder.svg" />
-                            <AvatarFallback className="bg-gray-700 text-white">
+                            <AvatarFallback className="bg-gray-700 text-white text-xs sm:text-sm">
                               {user.name
                                 .split(" ")
                                 .map((n) => n[0])
                                 .join("")}
                             </AvatarFallback>
                           </Avatar>
-                          <div className="flex-1">
-                            <p className="font-medium text-white text-lg">
+                          <div className="flex-1 min-w-0">
+                            <p className="flex gap-2 items-center font-medium text-white text-sm truncate">
                               {user.name}
+                              {user.isVerified && (
+                                <VerifiedIcon className="w-4 h-4 text-green-500" />
+                              )}
                             </p>
-                            <p className="text-sm text-gray-400">
+                            <p className="text-xs sm:text-sm text-gray-400 truncate">
                               {user.email}
                             </p>
-                            <div className="flex items-center space-x-4 mt-1">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-1">
                               <span className="text-xs text-gray-500">
                                 Role: {user.role}
                               </span>
                               <span className="text-xs text-gray-500">
                                 Language: {user.languagePreference}
                               </span>
-                              {user.isVerified && (
-                                <span className="text-xs text-green-500 font-medium">
-                                  ✓ Verified
-                                </span>
-                              )}
                             </div>
                           </div>
                         </div>
@@ -493,8 +513,8 @@ function AdminDashboardContent() {
                               )}
                             </Button>
                           </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-gray-800 border-gray-600">
-                            <AlertDialogHeader>
+                          <AlertDialogContent className="bg-gray-800 border-gray-600 mx-4 sm:mx-0 max-w-md">
+                            <AlertDialogHeader className="px-2">
                               <AlertDialogTitle className="text-white">
                                 Delete User
                               </AlertDialogTitle>
@@ -504,12 +524,12 @@ function AdminDashboardContent() {
                                 and will remove all their posts and comments.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="text-white border-gray-600 hover:bg-gray-700">
+                            <AlertDialogFooter className="px-2 flex-col sm:flex-row gap-2">
+                              <AlertDialogCancel className="text-white border-gray-600 hover:bg-gray-700 w-full sm:w-auto">
                                 Cancel
                               </AlertDialogCancel>
                               <AlertDialogAction
-                                className="bg-red-600 text-white hover:bg-red-700"
+                                className="bg-red-600 text-white hover:bg-red-700 w-full sm:w-auto"
                                 onClick={() => handleDeleteUser(user.id)}
                               >
                                 Delete
@@ -520,10 +540,10 @@ function AdminDashboardContent() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex items-center justify-between text-sm text-gray-400">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 text-xs sm:text-sm text-gray-400">
                         <span>User ID: {user.id}</span>
                         <span className="flex items-center space-x-1">
-                          <Clock className="w-4 h-4" />
+                          <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                           <span>
                             Joined{" "}
                             {formatDistanceToNow(new Date(user.createdAt), {

@@ -119,15 +119,15 @@ export default function UserListModal({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-md bg-gray-800 text-white border-gray-600">
-        <DialogHeader>
+      <DialogContent className="max-w-md bg-gray-800 text-white border-gray-600 mx-4 sm:mx-0">
+        <DialogHeader className="px-2 sm:px-0">
           <DialogTitle className="flex items-center space-x-2 text-white">
             {getIcon()}
             <span>{getTitle()}</span>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="max-h-96 overflow-y-auto">
+        <div className="max-h-96 overflow-y-auto px-2 sm:px-0">
           {isLoading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="animate-spin w-6 h-6 mr-2" />
@@ -152,18 +152,22 @@ export default function UserListModal({
                   key={user.id}
                   className="flex items-center space-x-3 p-3 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
                 >
-                  <Avatar className="w-10 h-10">
+                  <Avatar className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
                     <AvatarImage src="/placeholder.svg" />
-                    <AvatarFallback className="bg-gray-600 text-white">
+                    <AvatarFallback className="bg-gray-600 text-white text-xs sm:text-sm">
                       {user.name
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1">
-                    <p className="font-medium text-white">{user.name}</p>
-                    <p className="text-sm text-gray-400">{user.role}</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-white text-sm sm:text-base truncate">
+                      {user.name}
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-400 truncate">
+                      {user.role}
+                    </p>
                   </div>
                 </div>
               ))}

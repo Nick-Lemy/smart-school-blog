@@ -261,9 +261,9 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex justify-between">
-          <h1 className="text-xl font-medium text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="flex sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
+          <h1 className="text-lg sm:text-xl font-medium text-white">
             Hello,{" "}
             <span className="text-green-600 font-bold">
               {currentUser?.name}!
@@ -276,8 +276,8 @@ export default function DashboardPage() {
             </AvatarFallback>
           </Avatar>
         </div>
-        <div className="grid gap-8">
-          <div className="grid grid-cols-2 gap-4 pt-5 text-center">
+        <div className="grid gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-5 text-center">
             <Card className="bg-gray-800 border-gray-600 text-white">
               <div className="text-2xl font-bold text-white">
                 {userPosts.length}
@@ -313,8 +313,8 @@ export default function DashboardPage() {
                       <span>New Post</span>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
-                    <DialogHeader>
+                  <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600 mx-4 sm:mx-0">
+                    <DialogHeader className="px-2 sm:px-0">
                       <DialogTitle className="text-white">
                         Create New Post
                       </DialogTitle>
@@ -323,7 +323,7 @@ export default function DashboardPage() {
                         SmartSchool community
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-4 px-2 sm:px-0">
                       <Input
                         placeholder="Enter an engaging post title..."
                         value={newPost.title}
@@ -346,7 +346,7 @@ export default function DashboardPage() {
                           {postError}
                         </div>
                       )}
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex justify-end space-x-2 px-2 sm:px-0">
                         <Button
                           variant="outline"
                           className="text-white border-gray-600 hover:bg-gray-700"
@@ -391,8 +391,8 @@ export default function DashboardPage() {
                       <span>Create Event</span>
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
-                    <DialogHeader>
+                  <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600 mx-4 sm:mx-0">
+                    <DialogHeader className="px-2 sm:px-0">
                       <DialogTitle className="text-white">
                         Create New Event
                       </DialogTitle>
@@ -400,7 +400,7 @@ export default function DashboardPage() {
                         Organize study groups, meetups, or campus activities
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4">
+                    <div className="space-y-4 px-2 sm:px-0">
                       <Input
                         placeholder="Event title (e.g., Python Study Group)"
                         value={newEvent.title}
@@ -420,7 +420,7 @@ export default function DashboardPage() {
                         }
                         className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
                       />
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
                             Start Date & Time
@@ -497,7 +497,7 @@ export default function DashboardPage() {
                           {eventError}
                         </div>
                       )}
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex justify-end space-x-2 px-2 sm:px-0">
                         <Button
                           variant="outline"
                           className="text-white border-gray-600 hover:bg-gray-700"
@@ -585,11 +585,10 @@ export default function DashboardPage() {
                               </Button>
                             </div>
                           </div>
-                          <CardTitle
-                            className="text-lg text-green-500 hover:text-green-400 cursor-pointer"
-                            onClick={() => router.push(`/home/blog/${post.id}`)}
-                          >
-                            {post.title}
+                          <CardTitle className="text-lg text-green-500 hover:text-green-400 cursor-pointer">
+                            <Link href={`/home/blog/${post.id}`}>
+                              {post.title}
+                            </Link>
                           </CardTitle>
                           <CardDescription className="text-gray-400 line-clamp-2">
                             {post.content.slice(0, 150)}...

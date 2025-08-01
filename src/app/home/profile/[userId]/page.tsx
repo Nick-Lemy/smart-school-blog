@@ -29,6 +29,7 @@ import api from "@/lib/utils";
 import { Post, Event, User as UserType } from "@/lib/types";
 import { AxiosResponse } from "axios";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 export default function ProfilePage() {
   const params = useParams();
@@ -205,11 +206,8 @@ export default function ProfilePage() {
                     className="bg-gray-800 border-gray-600 text-white hover:shadow-md transition-shadow"
                   >
                     <CardHeader>
-                      <CardTitle
-                        className="text-lg text-green-500 hover:text-green-400 cursor-pointer"
-                        onClick={() => router.push(`/home/blog/${post.id}`)}
-                      >
-                        {post.title}
+                      <CardTitle className="text-lg text-green-500 hover:text-green-400 cursor-pointer">
+                        <Link href={`/home/blog/${post.id}`}>{post.title}</Link>
                       </CardTitle>
                       <CardDescription className="text-gray-400 line-clamp-2">
                         {post.content.slice(0, 150)}...
@@ -256,11 +254,10 @@ export default function ProfilePage() {
                     className="bg-gray-800 border-gray-600 text-white hover:shadow-md transition-shadow"
                   >
                     <CardHeader>
-                      <CardTitle
-                        className="text-lg text-green-500 hover:text-green-400 cursor-pointer"
-                        onClick={() => router.push(`/home/events/${event.id}`)}
-                      >
-                        {event.title}
+                      <CardTitle className="text-lg text-green-500 hover:text-green-400 cursor-pointer">
+                        <Link href={`/home/events/${event.id}`}>
+                          {event.title}
+                        </Link>
                       </CardTitle>
                       <CardDescription className="text-gray-400 line-clamp-2">
                         {event.description}

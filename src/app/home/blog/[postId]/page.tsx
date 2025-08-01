@@ -23,6 +23,7 @@ import { AxiosResponse } from "axios";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/contexts/AuthContext";
 import UserListModal from "@/components/UserListModal";
+import Link from "next/link";
 
 export default function UniquePostPage() {
   const params = useParams();
@@ -246,10 +247,8 @@ export default function UniquePostPage() {
 
           {/* Author Info */}
           <div className="flex items-center space-x-3 mb-6 pb-6 border-b border-gray-600">
-            <Avatar
-              className="w-12 h-12 cursor-pointer"
-              onClick={() => router.push(`/home/profile/${post.author.id}`)}
-            >
+            <Avatar className="w-12 h-12 cursor-pointer">
+              <Link href={`/home/profile/${post.author.id}`}></Link>
               <AvatarImage src="/placeholder.svg" />
               <AvatarFallback className="bg-gray-700 text-white">
                 {post.author.name
@@ -259,12 +258,11 @@ export default function UniquePostPage() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <p
-                className="font-medium text-white text-lg hover:text-green-500 cursor-pointer transition-colors"
-                onClick={() => router.push(`/home/profile/${post.author.id}`)}
-              >
-                {post.author.name}
-              </p>
+              <Link href={`/home/profile/${post.author.id}`}>
+                <p className="font-medium text-sm text-white hover:text-green-500 cursor-pointer transition-colors">
+                  {post.author.name}
+                </p>
+              </Link>
               <div className="flex items-center space-x-4 text-sm text-gray-400">
                 <span className="flex items-center">
                   <Calendar className="w-4 h-4 mr-1" />
@@ -406,11 +404,8 @@ export default function UniquePostPage() {
               <p className="text-gray-400 mb-3">
                 Login to add comments and like posts
               </p>
-              <Button
-                onClick={() => router.push("/auth/login")}
-                className="bg-green-600 text-black font-semibold hover:bg-green-700"
-              >
-                Login
+              <Button className="bg-green-600 text-black font-semibold hover:bg-green-700">
+                <Link href={"/auth/login"}>Login</Link>
               </Button>
             </div>
           )}
@@ -443,7 +438,7 @@ export default function UniquePostPage() {
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-2">
                             <span
-                              className="font-medium text-white hover:text-green-500 cursor-pointer transition-colors"
+                              className="font-medium text-sm text-white hover:text-green-500 cursor-pointer transition-colors"
                               onClick={() =>
                                 router.push(`/home/profile/${author.id}`)
                               }

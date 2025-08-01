@@ -180,8 +180,8 @@ export default function EventsPage() {
                   <span>Create Event</span>
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600">
-                <DialogHeader>
+              <DialogContent className="max-w-2xl bg-gray-800 text-white border-gray-600 mx-4 sm:mx-0">
+                <DialogHeader className="px-2 sm:px-0">
                   <DialogTitle className="text-white">
                     Create New Event
                   </DialogTitle>
@@ -189,7 +189,7 @@ export default function EventsPage() {
                     Organize study groups, meetups, or campus activities
                   </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-4">
+                <div className="space-y-4 px-2 sm:px-0">
                   <Input
                     placeholder="Event title (e.g., Python Study Group)"
                     value={newEvent.title}
@@ -276,7 +276,7 @@ export default function EventsPage() {
                     }
                     className="bg-gray-700 text-white border-gray-600 placeholder-gray-400 focus:ring-green-500 focus:border-green-500"
                   />
-                  <div className="flex justify-end space-x-2">
+                  <div className="flex justify-end space-x-2 px-2 sm:px-0">
                     <Button
                       variant="outline"
                       className="text-white border-gray-600 hover:bg-gray-700"
@@ -354,13 +354,10 @@ export default function EventsPage() {
                         </CardHeader>
 
                         <CardContent className="space-y-4">
-                          <CardTitle
-                            className="text-lg cursor-pointer text-green-500 hover:text-green-700 transition-colors"
-                            onClick={() =>
-                              router.push(`/home/events/${event.id}`)
-                            }
-                          >
-                            {event.title}
+                          <CardTitle className="text-lg cursor-pointer text-green-500 hover:text-green-700 transition-colors">
+                            <Link href={`/home/events/${event.id}`}>
+                              {event.title}
+                            </Link>
                           </CardTitle>
                           <CardDescription className="line-clamp-2 text-white">
                             {event.description}

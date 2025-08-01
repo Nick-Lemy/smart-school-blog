@@ -210,7 +210,7 @@ export default function UniqueEventPage() {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-white text-lg">
+                  <p className="font-medium text-white text-sm">
                     Hosted by {host.name}
                   </p>
                   <div className="flex items-center space-x-4 text-sm text-gray-400">
@@ -321,13 +321,13 @@ export default function UniqueEventPage() {
                   Login to Join
                 </Button>
               )}
-              <Button
+              {/* <Button
                 variant="outline"
                 className="text-white border-gray-600 hover:bg-gray-700 flex-1"
               >
                 <Share className="mr-2 h-4 w-4" />
                 Share Event
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

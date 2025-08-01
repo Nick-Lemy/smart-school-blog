@@ -20,7 +20,7 @@ import {
 import { Post } from "@/lib/types";
 import api from "@/lib/utils";
 import { AxiosResponse } from "axios";
-import { Sparkles, Search, Loader2, Plus, RefreshCw } from "lucide-react";
+import { Sparkles, Search, Loader2, Plus, RefreshCw, Link } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -207,11 +207,8 @@ export default function BlogPage() {
                 className="border rounded-lg border-gray-800/50 shadow-0"
               >
                 <CardHeader>
-                  <CardTitle
-                    className="text-xl cursor-pointer text-green-600 transition-colors hover:text-green-500"
-                    onClick={() => router.push(`/home/blog/${post.id}`)}
-                  >
-                    {post.title}
+                  <CardTitle className="text-xl cursor-pointer text-green-600 transition-colors hover:text-green-500">
+                    <Link href={`/home/blog/${post.id}`}>{post.title}</Link>
                   </CardTitle>
                   <CardDescription className="text-white font-normal">
                     {post.content.slice(0, 100)}...
@@ -267,13 +264,10 @@ export default function BlogPage() {
                   <Button className="">Read More</Button> */}
                     <p className="font-normal text-xs text-white">
                       <span className="text-green-600 font-bold">Author: </span>
-                      <span
-                        className="text-white hover:text-green-500 cursor-pointer transition-colors"
-                        onClick={() =>
-                          router.push(`/home/profile/${post.author.id}`)
-                        }
-                      >
-                        {post.author.name}
+                      <span className="text-white text-sm hover:text-green-500 cursor-pointer transition-colors">
+                        <Link href={`/home/profile/${post.author.id}`}>
+                          {post.author.name}
+                        </Link>
                       </span>
                     </p>
                     <p className="text-sm text-gray-500">
