@@ -29,16 +29,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const stored = localStorage.getItem("token");
     if (stored) {
-      setToken(stored);
-      api.defaults.headers.common["Authorization"] = `Bearer ${stored}`;
       api
         .get("/users/me")
         .then((response) => {
           setCurrentUser(response.data);
+          setToken(stored);
+          api.defaults.headers.common["Authorization"] = `Bearer ${stored}`;
         })
         .catch((error) => {
           console.error("Failed to fetch user:", error);
           setCurrentUser(null);
+          setToken(null); // Clear token if user fetch fails
+          localStorage.removeItem("token");
+          delete api.defaults.headers.common["Authorization"];
         })
         .finally(() => {
           setIsLoading(false); // <== DONE LOADING
