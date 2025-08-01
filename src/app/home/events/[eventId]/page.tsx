@@ -15,7 +15,6 @@ import {
   User,
   Tag,
   UserPlus,
-  Share,
 } from "lucide-react";
 import { Event, User as UserType } from "@/lib/types";
 import api from "@/lib/utils";

@@ -42,6 +42,7 @@ import api from "@/lib/utils";
 import { Post, Event, User } from "@/lib/types";
 import { AxiosResponse } from "axios";
 import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 
 function AdminDashboardContent() {
   const router = useRouter();
