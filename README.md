@@ -1,36 +1,157 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Smart School Blog
+
+A modern, responsive blog platform's frontend built with Next.js, TypeScript, and Tailwind CSS. This application provides a comprehensive blogging and event management system for educational institutions.
+
+## Features
+
+- **Authentication System** - Secure login and registration
+- **Blog Management** - Create, read, and delete blog posts
+- **Event Management** - Organize and manage campus events
+- **User Profiles** - Personal user profiles with posts and events
+- **AI-Powered Summaries** - Automatic post summarization
+- **Admin Dashboard** - Complete admin panel for content management
+- **Responsive Design** - Mobile-first responsive interface
+
+## Tech Stack
+
+- **Frontend**: Next.js 13+ (App Router), TypeScript, Tailwind CSS
+- **UI Components**: Radix UI, Shadcn/ui
+- **Icons**: Lucide React
+- **Date Handling**: date-fns
+- **HTTP Client**: Axios
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+Make sure you have Node.js (version 18 or higher) installed on your machine.
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/Nick-Lemy/smart-school-blog.git
+   cd smart-school-blog
+   ```
+
+2. **Install dependencies**
+
+   Using npm:
+
+   ```bash
+   npm install
+   ```
+
+   Or using yarn:
+
+   ```bash
+   yarn install
+   ```
+
+3. **Set up environment variables**
+
+   Create a `.env` file in the root directory and add the following:
+
+   ```bash
+   # Backend API URL
+   NEXT_PUBLIC_BASE_URL=https://smart-school-blog-backend.onrender.com
+   ```
+
+### Running the Development Server
+
+Using npm:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Using yarn:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+yarn dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Using pnpm:
 
-## Learn More
+```bash
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Building for Production
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Using npm:
 
-## Deploy on Vercel
+```bash
+npm run build
+npm start
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Using yarn:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+yarn build
+yarn start
+```
+
+## Project Structure
+
+```text
+src/
+├── app/
+│   ├── auth/              # Authentication pages
+│   ├── home/              # Main application pages
+│   │   ├── admin/         # Admin dashboard
+│   │   ├── blog/          # Blog pages
+│   │   ├── dashboard/     # User dashboard
+│   │   ├── events/        # Event pages
+│   │   └── profile/       # User profiles
+│   └── globals.css        # Global styles
+├── components/            # Reusable UI components
+│   ├── ui/               # Shadcn/ui components
+│   └── ...               # Custom components
+├── contexts/             # React contexts
+├── lib/                  # Utility functions and types
+└── ...
+```
+
+## Available Scripts
+
+- `npm run dev` / `yarn dev` - Start development server
+- `npm run build` / `yarn build` - Build for production
+- `npm start` / `yarn start` - Start production server
+- `npm run lint` / `yarn lint` - Run ESLint
+
+## Key Features Walkthrough
+
+### Authentication
+
+- Login and registration with form validation
+- Protected routes for authenticated users
+- Admin-only routes for administrative functions
+
+### Blog System
+
+- Create and publish blog posts
+- AI-powered post summaries with regeneration
+- Like and comment functionality
+- User interaction tracking
+
+### Event Management
+
+- Create and manage events
+- Event categories and scheduling
+- Attendee management
+- Event discovery and filtering
+
+### Admin Dashboard
+
+- User management (view and delete users)
+- Content moderation (posts and events)
+- Responsive admin interface
+
+### Responsive Design
+
+- Mobile-first approach
